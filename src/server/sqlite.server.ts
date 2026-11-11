@@ -26,6 +26,10 @@ export class Db {
     this.conn.exec('PRAGMA busy_timeout = 5000')
   }
 
+  close() {
+    this.conn.close()
+  }
+
   exec(sql: string) {
     this.conn.exec(sql)
   }

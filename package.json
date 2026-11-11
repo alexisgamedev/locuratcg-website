@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "start": "vite preview --host 0.0.0.0 --port ${PORT:-3000} --strictPort",
+    "start": "node --disable-warning=ExperimentalWarning scripts/serve.mjs",
     "typecheck": "tsc --noEmit",
     "draw": "node scripts/draw.mjs",
     "grant": "node scripts/grant.mjs"
