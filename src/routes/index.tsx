@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight, Coins, Plus, Sparkles, Target, Ticket, Trophy } from 'lucide-react'
 import { GameFilter, type GameFilterId } from '@/components/GameFilter'
-import { PrizeImage } from '@/components/PrizeImage'
+import { FeaturedRaffle, pickFeaturedRaffle } from '@/components/FeaturedRaffle'
 import { RaffleCard } from '@/components/RaffleCard'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -26,10 +26,7 @@ export const Route = createFileRoute('/')({
   component: HomePage,
 })
 
-// Hero art. Swap for your own file in /public when you move off Base44's image host.
-const HERO_IMAGE = 'https://media.base44.com/images/public/6af216ac73a68f900ab673c0/7fbacb10e_generated_image.png'
-
-function Hero({ stats }: { stats: { label: string; value: string }[] }) {
+function Hero({ stats, featured }: { stats: { label: string; value: string }[]; featured: Raffle | null }) {
   return (
     <section className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 halo-grid opacity-70" />
@@ -39,7 +36,7 @@ function Hero({ stats }: { stats: { label: string; value: string }[] }) {
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Temporada 04 · Pokémon y One Piece
+            Temporada 0 · Un sorteo cada semana
           </p>
           <h1 className="mt-6 font-display text-[2.6rem] leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-[4.4rem]">
             Quédate con las cartas
@@ -76,34 +73,7 @@ function Hero({ stats }: { stats: { label: string; value: string }[] }) {
           </dl>
         </div>
 
-        <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-          <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/20 via-transparent to-holo/20 blur-2xl" />
-          <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card/80 p-3">
-            <div className="relative overflow-hidden rounded-[1.25rem]">
-              <PrizeImage src={HERO_IMAGE} alt="Carta holo gradeada bajo un reflector" className="aspect-[4/5] w-full" />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-              <div className="absolute inset-x-4 bottom-4 flex items-end justify-between">
-                <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">El grial de la semana</p>
-                  <p className="mt-1 font-heading text-sm font-semibold text-white">Charizard ex · PSA 10</p>
-                </div>
-                <span className="rounded-full bg-black/60 px-2.5 py-1 font-mono text-[10px] text-white ring-1 ring-white/20">
-                  140 pts
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="absolute -left-4 top-8 hidden rounded-xl border border-border bg-background/90 px-4 py-3 backdrop-blur sm:block">
-            <p className="serial">Tu bóveda</p>
-            <p className="mt-1 flex items-center gap-1.5 font-mono text-sm text-primary">
-              <Sparkles className="h-3.5 w-3.5" /> +400 pts
-            </p>
-          </div>
-          <div className="absolute -right-3 bottom-16 hidden rounded-xl border border-border bg-background/90 px-4 py-3 backdrop-blur sm:block">
-            <p className="serial">Boleto confirmado</p>
-            <p className="mt-1 font-mono text-sm text-foreground">#04,218</p>
-          </div>
-        </div>
+        <FeaturedRaffle raffle={featured} />
       </div>
     </section>
   )
@@ -310,7 +280,7 @@ function HomePage() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main>
-        <Hero stats={stats} />
+        <Hero stats={stats} featured={pickFeaturedRaffle(live)} />
 
         <section id="raffles" className="mx-auto max-w-7xl px-5 pb-16 lg:px-8 lg:pb-24">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
