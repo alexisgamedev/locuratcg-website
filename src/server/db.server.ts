@@ -1,5 +1,5 @@
 import './env.server'
-import Database from 'better-sqlite3'
+import { Db } from './sqlite.server'
 import { randomBytes } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -103,9 +103,7 @@ export function now() {
 function open() {
   const file = process.env.DATABASE_PATH || path.join(process.cwd(), 'data', 'pullclub.db')
   fs.mkdirSync(path.dirname(file), { recursive: true })
-  const db = new Database(file)
-  db.pragma('journal_mode = WAL')
-  db.pragma('foreign_keys = ON')
+  const db = new Db(file)
   db.exec(SCHEMA)
 
   // First run: load the raffles that were on the original site.
@@ -127,5 +125,5 @@ function open() {
 }
 
 // Reuse one connection across hot reloads in dev.
-const g = globalThis as unknown as { __pullClubDb?: Database.Database }
+const g = globalThis as unknown as { __pullClubDb?: Db }
 export const db = g.__pullClubDb ?? (g.__pullClubDb = open())

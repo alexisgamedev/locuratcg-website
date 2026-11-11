@@ -16,5 +16,4 @@ export default defineConfig({
   preview: { allowedHosts },
   resolve: { tsconfigPaths: true },
   plugins: [tanstackStart(), viteReact()],
-  ssr: { external: ['better-sqlite3'] },
 })
