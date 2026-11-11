@@ -12,7 +12,7 @@ export const Route = createFileRoute('/admin/')({
 
 function formatDate(iso: string | null) {
   if (!iso) return '—'
-  return new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+  return new Date(iso).toLocaleString('es-PE', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 }
 
 function AdminRafflesPage() {
@@ -23,26 +23,26 @@ function AdminRafflesPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="serial">Admin</p>
-          <h1 className="mt-3 font-display text-3xl text-foreground">Raffles</h1>
+          <h1 className="mt-3 font-display text-3xl text-foreground">Sorteos</h1>
         </div>
         <Link
           to="/admin/raffles/new"
           className="glow-ion inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
         >
-          <Plus className="h-4 w-4" /> New raffle
+          <Plus className="h-4 w-4" /> Nuevo sorteo
         </Link>
       </div>
 
       {data && (
         <dl className="mt-8 grid grid-cols-3 gap-4 sm:max-w-xl">
           {[
-            { label: 'Accounts', value: data.stats.users },
-            { label: 'Active members', value: data.stats.members },
-            { label: 'Entries placed', value: data.stats.entries },
+            { label: 'Cuentas', value: data.stats.users },
+            { label: 'Miembros activos', value: data.stats.members },
+            { label: 'Boletos jugados', value: data.stats.entries },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-border bg-card p-4">
               <dt className="serial">{s.label}</dt>
-              <dd className="mt-2 font-heading text-2xl font-bold text-foreground">{s.value.toLocaleString('en-US')}</dd>
+              <dd className="mt-2 font-heading text-2xl font-bold text-foreground">{s.value.toLocaleString('es-PE')}</dd>
             </div>
           ))}
         </dl>
@@ -63,11 +63,11 @@ function AdminRafflesPage() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-foreground">{r.prize_name}</p>
                 <p className="serial mt-1">
-                  {GAME_LABELS[r.game] || r.game} · {r.entry_cost_points} pts/entry · {r.entries_count} entries
+                  {GAME_LABELS[r.game] || r.game} · {r.entry_cost_points} pts/boleto · {r.entries_count} boletos
                 </p>
               </div>
               <div className="hidden text-right sm:block">
-                <p className="serial">{r.status === 'drawn' ? 'Drawn' : 'Draws'}</p>
+                <p className="serial">{r.status === 'drawn' ? 'Sorteado' : 'Se sortea'}</p>
                 <p className="mt-1 font-mono text-xs text-foreground">{formatDate(r.draws_at)}</p>
               </div>
               <StatusBadge status={r.status} />
@@ -75,7 +75,7 @@ function AdminRafflesPage() {
           ))}
           {data?.raffles.length === 0 && (
             <p className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-              No raffles yet. Create your first one.
+              Aún no hay sorteos. Crea el primero.
             </p>
           )}
         </div>

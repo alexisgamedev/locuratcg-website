@@ -68,13 +68,13 @@ export function isAdminEmail(email: string) {
 
 export function requireAdmin(): User {
   const user = requireUser()
-  if (!user.is_admin) throw new Error("You don't have access to the admin area.")
+  if (!user.is_admin) throw new Error('No tienes acceso al área de administración.')
   return user
 }
 
 export function requireUser(): User {
   const user = currentUser()
-  if (!user) throw new Error('Please sign in first.')
+  if (!user) throw new Error('Primero inicia sesión.')
   return user
 }
 

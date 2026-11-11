@@ -5,7 +5,7 @@ import { AuthCard, Field, FormError, SubmitButton } from '@/components/AuthCard'
 import { requestPasswordReset } from '@/server/functions'
 
 export const Route = createFileRoute('/forgot-password')({
-  head: () => ({ meta: [{ title: 'Reset password — Pull Club' }] }),
+  head: () => ({ meta: [{ title: 'Restablecer contraseña — Locura TCG' }] }),
   component: ForgotPasswordPage,
 })
 
@@ -30,10 +30,10 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <AuthCard icon={KeyRound} title="Reset password" subtitle="We'll send you a link to reset it">
+    <AuthCard icon={KeyRound} title="Restablecer contraseña" subtitle="Te enviaremos un enlace para restablecerla">
       {sent ? (
         <p className="text-center text-sm text-foreground">
-          If an account exists with that email, you'll receive a password reset link shortly.
+          Si existe una cuenta con ese correo, en breve recibirás un enlace para restablecer tu contraseña.
         </p>
       ) : (
         <>
@@ -41,24 +41,24 @@ function ForgotPasswordPage() {
           <form onSubmit={onSubmit} className="space-y-4">
             <Field
               id="forgot-email"
-              label="Email address"
+              label="Correo electrónico"
               icon={Mail}
               type="email"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder="tu@correo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <SubmitButton busy={busy} busyLabel="Sending...">
-              Send reset link
+            <SubmitButton busy={busy} busyLabel="Enviando...">
+              Enviar enlace
             </SubmitButton>
           </form>
         </>
       )}
       <p className="mt-6 text-center text-sm text-muted-foreground">
         <Link to="/login" className="font-medium text-primary hover:underline">
-          Back to log in
+          Volver a iniciar sesión
         </Link>
       </p>
     </AuthCard>

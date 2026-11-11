@@ -18,8 +18,8 @@ function displayName(fullName: string, email: string) {
 export function drawRaffle(raffleId: string) {
   return db.transaction(() => {
     const raffle = db.prepare('SELECT * FROM raffles WHERE id = ?').get(raffleId) as Raffle | undefined
-    if (!raffle) throw new Error('Raffle not found.')
-    if (raffle.status !== 'live') throw new Error('Only live raffles can be drawn.')
+    if (!raffle) throw new Error('Sorteo no encontrado.')
+    if (raffle.status !== 'live') throw new Error('Solo se pueden sortear los sorteos activos.')
 
     const entries = db
       .prepare(
@@ -35,7 +35,7 @@ export function drawRaffle(raffleId: string) {
     if (total === 0) {
       db.prepare(
         `UPDATE raffles SET status = 'drawn', winner_name = NULL, winner_initials = NULL, winner_tier = NULL,
-           draw_note = 'No entries', updated_date = ? WHERE id = ?`,
+           draw_note = 'Sin boletos', updated_date = ? WHERE id = ?`,
       ).run(ts, raffleId)
       return { winner: null as null | { name: string; email: string }, total }
     }
@@ -52,7 +52,7 @@ export function drawRaffle(raffleId: string) {
       name,
       initials,
       winner.tier ? getTier(winner.tier).name : null,
-      `Entry #${String(winningNumber).padStart(4, '0')} of ${total}`,
+      `Boleto #${String(winningNumber).padStart(4, '0')} de ${total}`,
       ts,
       raffleId,
     )

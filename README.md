@@ -1,4 +1,4 @@
-# Pull Club
+# Locura TCG
 
 A membership club for TCG collectors: members pay monthly (in PEN, via Culqi), get vault points, and spend them on entries for Pokémon and One Piece prize raffles.
 

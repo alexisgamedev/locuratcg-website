@@ -8,7 +8,7 @@ import { login } from '@/server/functions'
 
 export const Route = createFileRoute('/login')({
   validateSearch: (s: Record<string, unknown>): { returnTo?: string } => ({ returnTo: typeof s.returnTo === 'string' ? s.returnTo : undefined }),
-  head: () => ({ meta: [{ title: 'Log in — Pull Club' }] }),
+  head: () => ({ meta: [{ title: 'Iniciar sesión — Locura TCG' }] }),
   component: LoginPage,
 })
 
@@ -30,30 +30,30 @@ function LoginPage() {
       queryClient.setQueryData(sessionQuery.queryKey, user)
       navigate({ href: safeReturnTo(returnTo) })
     } catch (err) {
-      setError((err as Error).message || 'Invalid email or password')
+      setError((err as Error).message || 'Correo o contraseña incorrectos')
       setBusy(false)
     }
   }
 
   return (
-    <AuthCard icon={LogIn} title="Welcome back" subtitle="Log in to your account">
+    <AuthCard icon={LogIn} title="¡Qué bueno verte de nuevo!" subtitle="Inicia sesión en tu cuenta">
       <FormError>{error}</FormError>
       <form onSubmit={onSubmit} className="space-y-4">
         <Field
           id="login-email"
-          label="Email"
+          label="Correo electrónico"
           icon={Mail}
           type="email"
           autoComplete="email"
           autoFocus
-          placeholder="you@example.com"
+          placeholder="tu@correo.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         <Field
           id="login-password"
-          label="Password"
+          label="Contraseña"
           icon={Lock}
           type="password"
           autoComplete="current-password"
@@ -63,18 +63,18 @@ function LoginPage() {
           required
           aside={
             <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-              Forgot password?
+              ¿Olvidaste tu contraseña?
             </Link>
           }
         />
-        <SubmitButton busy={busy} busyLabel="Logging in...">
-          Log in
+        <SubmitButton busy={busy} busyLabel="Ingresando...">
+          Iniciar sesión
         </SubmitButton>
       </form>
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Don't have an account?{' '}
+        ¿No tienes una cuenta?{' '}
         <Link to="/register" search={{ returnTo }} className="font-medium text-primary hover:underline">
-          Create one
+          Crea una
         </Link>
       </p>
     </AuthCard>

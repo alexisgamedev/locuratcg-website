@@ -5,7 +5,7 @@
 import { randomInt } from 'node:crypto'
 import { db, now } from './db.mjs'
 
-const TIER_NAMES = { rookie: 'Rookie', collector: 'Collector', master: 'Master' }
+const TIER_NAMES = { rookie: 'Novato', collector: 'Coleccionista', master: 'Maestro' }
 const forceId = process.argv[2]
 
 const raffles = forceId
@@ -26,7 +26,7 @@ for (const raffle of raffles) {
   const total = entries.reduce((s, e) => s + e.tickets, 0)
 
   if (total === 0) {
-    db.prepare(`UPDATE raffles SET status = 'drawn', draw_note = 'No entries', updated_date = ? WHERE id = ?`).run(now(), raffle.id)
+    db.prepare(`UPDATE raffles SET status = 'drawn', draw_note = 'Sin boletos', updated_date = ? WHERE id = ?`).run(now(), raffle.id)
     console.log(`${raffle.prize_name}: closed with no entries.`)
     continue
   }
@@ -42,7 +42,7 @@ for (const raffle of raffles) {
   db.prepare(
     `UPDATE raffles SET status = 'drawn', winner_name = ?, winner_initials = ?, winner_tier = ?,
        draw_note = ?, updated_date = ? WHERE id = ?`,
-  ).run(name, initials, TIER_NAMES[winner.tier] ?? null, `Entry #${String(winningNumber).padStart(4, '0')}`, now(), raffle.id)
+  ).run(name, initials, TIER_NAMES[winner.tier] ?? null, `Boleto #${String(winningNumber).padStart(4, '0')} de ${total}`, now(), raffle.id)
 
   console.log(`${raffle.prize_name}: entry #${winningNumber} of ${total} → ${name} <${winner.email}>`)
 }

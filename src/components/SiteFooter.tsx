@@ -5,25 +5,25 @@ const COLUMNS = [
   {
     title: 'Club',
     links: [
-      { to: '/membership', label: 'Membership' },
-      { to: '/raffles', label: 'Live raffles' },
-      { to: '/winners', label: 'Winners' },
+      { to: '/membership', label: 'Membresía' },
+      { to: '/raffles', label: 'Sorteos activos' },
+      { to: '/winners', label: 'Ganadores' },
     ],
   },
   {
-    title: 'Learn',
+    title: 'Infórmate',
     links: [
-      { to: '/rules', label: 'How it works' },
-      { to: '/rules', label: 'Club rules' },
-      { to: '/raffles', label: 'Prize archive' },
+      { to: '/rules', label: 'Cómo funciona' },
+      { to: '/rules', label: 'Reglas del club' },
+      { to: '/raffles', label: 'Archivo de premios' },
     ],
   },
   {
-    title: 'Account',
+    title: 'Cuenta',
     links: [
-      { to: '/login', label: 'Sign in' },
-      { to: '/register', label: 'Create account' },
-      { to: '/dashboard', label: 'My vault' },
+      { to: '/login', label: 'Iniciar sesión' },
+      { to: '/register', label: 'Crear cuenta' },
+      { to: '/dashboard', label: 'Mi bóveda' },
     ],
   },
 ] as const
@@ -36,8 +36,8 @@ export function SiteFooter() {
           <div>
             <Logo />
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              A membership club for TCG collectors. Your plan tops up points every month, and you decide which
-              Pokémon and One Piece prizes get your entries.
+              Un club de membresía para coleccionistas de TCG. Tu plan te recarga puntos cada mes y tú decides a qué
+              premios de Pokémon y One Piece van tus boletos.
             </p>
           </div>
           {COLUMNS.map((col) => (
@@ -56,8 +56,8 @@ export function SiteFooter() {
           ))}
         </div>
         <div className="mt-14 flex flex-col gap-3 border-t border-border/70 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Pull Club. No purchase necessary where prohibited by law.</p>
-          <p className="font-mono tracking-[0.2em]">18+ · PLAY RESPONSIBLY</p>
+          <p>© {new Date().getFullYear()} Locura TCG. No se requiere compra donde la ley lo prohíba.</p>
+          <p className="font-mono tracking-[0.2em]">18+ · JUEGA CON RESPONSABILIDAD</p>
         </div>
       </div>
     </footer>

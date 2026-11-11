@@ -15,7 +15,7 @@ export function TierCard({ tier, priceSuffix, pointsBig = false, action }: {
       <div className={`pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b ${tier.accent}`} />
       {tier.featured && (
         <span className="absolute right-5 top-5 rounded-full bg-primary px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.18em] text-primary-foreground">
-          Most picked
+          El más elegido
         </span>
       )}
       <div className="relative">
@@ -27,11 +27,11 @@ export function TierCard({ tier, priceSuffix, pointsBig = false, action }: {
         {pointsBig ? (
           <p className="mt-3 flex items-baseline gap-1.5 font-mono text-primary">
             <span className="text-2xl">+{tier.points}</span>
-            <span className="text-xs text-muted-foreground">pts / month</span>
+            <span className="text-xs text-muted-foreground">pts / mes</span>
           </p>
         ) : (
           <p className="mt-3 flex items-center gap-2 font-mono text-sm text-primary">
-            +{tier.points} pts <span className="text-muted-foreground">each month</span>
+            +{tier.points} pts <span className="text-muted-foreground">cada mes</span>
           </p>
         )}
         <p className="mt-3 text-sm text-muted-foreground">{tier.tagline}</p>

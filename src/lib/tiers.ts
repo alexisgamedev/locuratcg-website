@@ -19,27 +19,27 @@ export interface Tier {
 export const TIERS: Tier[] = [
   {
     id: 'rookie',
-    name: 'Rookie',
+    name: 'Novato',
     price: 14,
     pricePen: 50,
     points: 150,
-    tagline: 'Start chasing the grails.',
-    perks: ['150 vault points every month', 'Entries in every live raffle', 'Member-only raffle drops'],
+    tagline: 'Empieza a ir por tus griales.',
+    perks: ['150 puntos en tu bóveda cada mes', 'Participa en todos los sorteos activos', 'Sorteos exclusivos para miembros'],
     accent: 'from-sky-400/20 to-transparent',
     ring: 'ring-border',
   },
   {
     id: 'collector',
-    name: 'Collector',
+    name: 'Coleccionista',
     price: 29,
     pricePen: 110,
     points: 400,
-    tagline: 'The sweet spot for pack openers.',
+    tagline: 'El punto ideal para los que abren sobres.',
     perks: [
-      '400 vault points every month',
-      'Early access, 24h before public drop',
-      'Double points on your birthday month',
-      'Entries in every live raffle',
+      '400 puntos en tu bóveda cada mes',
+      'Acceso anticipado, 24 h antes del lanzamiento público',
+      'Puntos dobles en el mes de tu cumpleaños',
+      'Participa en todos los sorteos activos',
     ],
     accent: 'from-primary/25 to-transparent',
     ring: 'ring-primary/50',
@@ -47,17 +47,17 @@ export const TIERS: Tier[] = [
   },
   {
     id: 'master',
-    name: 'Master',
+    name: 'Maestro',
     price: 59,
     pricePen: 220,
     points: 900,
-    tagline: 'For the grail hunters.',
+    tagline: 'Para los cazadores de griales.',
     perks: [
-      '900 vault points every month',
-      'Early access, 48h before public drop',
-      'One free entry every month, on us',
-      'Priority shipping on every win',
-      'Entries in every live raffle',
+      '900 puntos en tu bóveda cada mes',
+      'Acceso anticipado, 48 h antes del lanzamiento público',
+      'Un boleto gratis cada mes, invitado por la casa',
+      'Envío prioritario en cada premio',
+      'Participa en todos los sorteos activos',
     ],
     accent: 'from-holo/25 to-transparent',
     ring: 'ring-holo/50',
@@ -66,6 +66,16 @@ export const TIERS: Tier[] = [
 
 export function getTier(id: string | null | undefined): Tier {
   return TIERS.find((t) => t.id === id) || TIERS[0]
+}
+
+// Winner tiers saved before the site was translated hold the English names.
+const LEGACY_TIER_NAMES: Record<string, TierId> = { Rookie: 'rookie', Collector: 'collector', Master: 'master' }
+
+/** Display name for a stored tier id or tier name (including the old English names). */
+export function tierLabel(value: string | null | undefined): string | null {
+  if (!value) return null
+  const id = LEGACY_TIER_NAMES[value] ?? value
+  return TIERS.find((t) => t.id === id || t.name === value)?.name ?? value
 }
 
 export function isTierId(id: unknown): id is TierId {

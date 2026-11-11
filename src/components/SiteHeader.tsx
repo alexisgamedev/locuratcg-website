@@ -5,10 +5,10 @@ import { useAuth } from '@/lib/auth'
 import { Logo } from './Logo'
 
 const NAV = [
-  { to: '/raffles', label: 'Raffles' },
-  { to: '/membership', label: 'Membership' },
-  { to: '/winners', label: 'Winners' },
-  { to: '/rules', label: 'How it works' },
+  { to: '/raffles', label: 'Sorteos' },
+  { to: '/membership', label: 'Membresía' },
+  { to: '/winners', label: 'Ganadores' },
+  { to: '/rules', label: 'Cómo funciona' },
 ] as const
 
 export function SiteHeader() {
@@ -47,25 +47,25 @@ export function SiteHeader() {
                 onClick={logout}
                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
-                Sign out
+                Cerrar sesión
               </button>
               <Link
                 to="/dashboard"
                 className="glow-ion rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
               >
-                My vault
+                Mi bóveda
               </Link>
             </>
           ) : (
             <>
               <Link to="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                Sign in
+                Iniciar sesión
               </Link>
               <Link
                 to="/membership"
                 className="glow-ion rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
               >
-                Join the club
+                Únete al club
               </Link>
             </>
           )}
@@ -74,7 +74,7 @@ export function SiteHeader() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label="Abrir o cerrar menú"
           className="grid h-10 w-10 place-items-center rounded-lg border border-border text-foreground md:hidden"
         >
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -103,11 +103,11 @@ export function SiteHeader() {
                 }}
                 className="rounded-lg px-2 py-3 text-left text-base text-muted-foreground"
               >
-                Sign out
+                Cerrar sesión
               </button>
             ) : (
               <Link to="/login" onClick={close} className="rounded-lg px-2 py-3 text-base text-muted-foreground">
-                Sign in
+                Iniciar sesión
               </Link>
             )}
           </nav>
@@ -116,7 +116,7 @@ export function SiteHeader() {
             onClick={close}
             className="mt-3 block rounded-full bg-primary px-5 py-3 text-center text-sm font-semibold text-primary-foreground"
           >
-            {isAuthenticated ? 'My vault' : 'Join the club'}
+            {isAuthenticated ? 'Mi bóveda' : 'Únete al club'}
           </Link>
         </div>
       )}

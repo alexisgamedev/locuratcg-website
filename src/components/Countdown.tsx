@@ -18,7 +18,7 @@ export function Countdown({ target, className = '' }: { target: string | null; c
   }, [target])
 
   if (!left) {
-    return <span className={`font-mono text-xs tracking-widest text-muted-foreground ${className}`}>DRAWING SOON</span>
+    return <span className={`font-mono text-xs tracking-widest text-muted-foreground ${className}`}>SORTEO MUY PRONTO</span>
   }
 
   const parts = [

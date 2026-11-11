@@ -3,7 +3,7 @@
     "id": "6af218d157a57bb5b8a8a2f2",
     "game": "pokemon",
     "prize_name": "Charizard ex — Special Illustration Rare · PSA 10",
-    "kicker": "Grail of the month",
+    "kicker": "Grial del mes",
     "prize_image": "https://media.base44.com/images/public/6af216ac73a68f900ab673c0/cfedebdab_generated_image.png",
     "retail_value": 1450,
     "entry_cost_points": 140,
@@ -20,7 +20,7 @@
     "id": "6af218d157a57bb5b8a8a2f3",
     "game": "one_piece",
     "prize_name": "Monkey D. Luffy — Manga Rare · PSA 10",
-    "kicker": "Chase card",
+    "kicker": "Carta chase",
     "prize_image": "https://media.base44.com/images/public/6af216ac73a68f900ab673c0/c8f75054f_generated_image.png",
     "retail_value": 2100,
     "entry_cost_points": 180,
@@ -36,8 +36,8 @@
   {
     "id": "6af218d157a57bb5b8a8a2f4",
     "game": "pokemon",
-    "prize_name": "151 Elite Trainer Box + Booster Bundle — sealed",
-    "kicker": "Sealed product",
+    "prize_name": "151 Elite Trainer Box + Booster Bundle — sellado",
+    "kicker": "Producto sellado",
     "prize_image": "https://media.base44.com/images/public/6af216ac73a68f900ab673c0/e65cfa21e_generated_image.png",
     "retail_value": 320,
     "entry_cost_points": 45,
@@ -53,8 +53,8 @@
   {
     "id": "6af218d157a57bb5b8a8a2f5",
     "game": "one_piece",
-    "prize_name": "Romance Dawn Booster Box — sealed, 1st print",
-    "kicker": "Sealed product",
+    "prize_name": "Romance Dawn Booster Box — sellada, 1.ª edición",
+    "kicker": "Producto sellado",
     "prize_image": "https://media.base44.com/images/public/6af216ac73a68f900ab673c0/b124fafa1_generated_image.png",
     "retail_value": 480,
     "entry_cost_points": 60,
@@ -70,8 +70,8 @@
   {
     "id": "6af218d157a57bb5b8a8a2f6",
     "game": "pokemon",
-    "prize_name": "Vintage holo lot — 6 cards, graded range 8–10",
-    "kicker": "Collector lot",
+    "prize_name": "Lote holo vintage — 6 cartas, gradeadas entre 8 y 10",
+    "kicker": "Lote de colección",
     "prize_image": "https://media.base44.com/images/public/6af216ac73a68f900ab673c0/5fbe4ebcc_generated_image.png",
     "retail_value": 1180,
     "entry_cost_points": 120,
@@ -87,8 +87,8 @@
   {
     "id": "6af218d157a57bb5b8a8a2f7",
     "game": "pokemon",
-    "prize_name": "151 Ultra-Premium Collection — sealed",
-    "kicker": "Sealed product",
+    "prize_name": "151 Ultra-Premium Collection — sellada",
+    "kicker": "Producto sellado",
     "prize_image": "https://media.base44.com/images/public/6af216ac73a68f900ab673c0/e65cfa21e_generated_image.png",
     "retail_value": 340,
     "entry_cost_points": 50,
@@ -98,14 +98,14 @@
     "entry_goal": 500,
     "winner_name": "Marcus T.",
     "winner_initials": "MT",
-    "winner_tier": "Master",
-    "draw_note": "Entry #0184"
+    "winner_tier": "Maestro",
+    "draw_note": "Boleto #0184"
   },
   {
     "id": "6af218d157a57bb5b8a8a2f8",
     "game": "one_piece",
-    "prize_name": "Romance Dawn Booster Box — sealed",
-    "kicker": "Sealed product",
+    "prize_name": "Romance Dawn Booster Box — sellada",
+    "kicker": "Producto sellado",
     "prize_image": "https://media.base44.com/images/public/6af216ac73a68f900ab673c0/b124fafa1_generated_image.png",
     "retail_value": 460,
     "entry_cost_points": 55,
@@ -115,14 +115,14 @@
     "entry_goal": 450,
     "winner_name": "Jules L.",
     "winner_initials": "JL",
-    "winner_tier": "Collector",
-    "draw_note": "Entry #0321"
+    "winner_tier": "Coleccionista",
+    "draw_note": "Boleto #0321"
   },
   {
     "id": "6af218d157a57bb5b8a8a2f9",
     "game": "one_piece",
     "prize_name": "One Piece Manga Rare · PSA 10",
-    "kicker": "Chase card",
+    "kicker": "Carta chase",
     "prize_image": "https://media.base44.com/images/public/6af216ac73a68f900ab673c0/c8f75054f_generated_image.png",
     "retail_value": 1950,
     "entry_cost_points": 170,
@@ -132,7 +132,7 @@
     "entry_goal": 400,
     "winner_name": "Ana R.",
     "winner_initials": "AR",
-    "winner_tier": "Master",
-    "draw_note": "Entry #0092"
+    "winner_tier": "Maestro",
+    "draw_note": "Boleto #0092"
   }
 ]

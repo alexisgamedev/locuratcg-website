@@ -10,7 +10,7 @@ export const Route = createFileRoute('/admin')({
     if (!user) throw redirect({ to: '/login', search: { returnTo: location.href } })
     return { user }
   },
-  head: () => ({ meta: [{ title: 'Admin — Pull Club' }, { name: 'robots', content: 'noindex' }] }),
+  head: () => ({ meta: [{ title: 'Admin — Locura TCG' }, { name: 'robots', content: 'noindex' }] }),
   component: AdminLayout,
 })
 
@@ -22,10 +22,10 @@ function AdminLayout() {
       <SiteLayout>
         <div className="mx-auto max-w-xl px-5 py-24 text-center">
           <ShieldAlert className="mx-auto h-6 w-6 text-muted-foreground" />
-          <h1 className="mt-5 font-display text-2xl text-foreground">Admins only.</h1>
+          <h1 className="mt-5 font-display text-2xl text-foreground">Solo para administradores.</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            {user.email} doesn't have access to the admin area. Add it to the <code>ADMIN_EMAILS</code> variable on
-            the server to grant access.
+            {user.email} no tiene acceso al área de administración. Agrégalo a la variable <code>ADMIN_EMAILS</code>{' '}
+            del servidor para darle acceso.
           </p>
         </div>
       </SiteLayout>
@@ -43,14 +43,14 @@ function AdminLayout() {
             className="text-sm text-muted-foreground hover:text-foreground"
             activeProps={{ className: 'text-foreground' }}
           >
-            Raffles
+            Sorteos
           </Link>
           <Link
             to="/admin/raffles/new"
             className="text-sm text-muted-foreground hover:text-foreground"
             activeProps={{ className: 'text-foreground' }}
           >
-            New raffle
+            Nuevo sorteo
           </Link>
         </div>
       </div>

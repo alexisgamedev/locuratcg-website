@@ -4,13 +4,14 @@ import { PageHero } from '@/components/PageHero'
 import { PrizeImage } from '@/components/PrizeImage'
 import { SiteLayout } from '@/components/SiteLayout'
 import { GAME_LABELS } from '@/lib/games'
+import { tierLabel } from '@/lib/tiers'
 import { listRaffles } from '@/server/functions'
 
 export const Route = createFileRoute('/winners')({
   head: () => ({
     meta: [
-      { title: 'Winners — Pull Club' },
-      { name: 'description', content: 'Every prize that has been drawn and the member who pulled it.' },
+      { title: 'Ganadores — Locura TCG' },
+      { name: 'description', content: 'Todos los premios sorteados y el miembro que se los llevó.' },
     ],
   }),
   loader: () => listRaffles(),
@@ -22,9 +23,9 @@ function WinnersPage() {
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="Hall of fame" title="The wall of" highlight="wins.">
+      <PageHero eyebrow="Salón de la fama" title="El muro de" highlight="ganadores.">
         <p className="mt-5 max-w-xl text-muted-foreground">
-          Every draw is public. Here's who walked away with what, and which tier they were on.
+          Todos los sorteos son públicos. Aquí ves quién se llevó qué y en qué nivel estaba.
         </p>
       </PageHero>
 
@@ -32,8 +33,8 @@ function WinnersPage() {
         {drawn.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-14 text-center">
             <Trophy className="mx-auto h-6 w-6 text-gold" />
-            <p className="mt-4 font-heading text-lg text-foreground">No draws finished yet.</p>
-            <p className="mt-2 text-sm text-muted-foreground">The first winners will appear here after the next draw.</p>
+            <p className="mt-4 font-heading text-lg text-foreground">Todavía no hay sorteos finalizados.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Los primeros ganadores aparecerán aquí después del próximo sorteo.</p>
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -50,15 +51,15 @@ function WinnersPage() {
                   </h2>
                   <div className="mt-4 flex items-center gap-3 border-t border-border pt-4">
                     <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-primary/25 to-holo/25 font-mono text-[11px] font-bold text-foreground ring-1 ring-border">
-                      {(r.winner_initials || 'PL').slice(0, 2)}
+                      {(r.winner_initials || 'LT').slice(0, 2)}
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">{r.winner_name || 'Member'}</p>
-                      <p className="serial mt-0.5">{r.winner_tier ? `${r.winner_tier} member` : 'Pull Club member'}</p>
+                      <p className="text-sm font-semibold text-foreground">{r.winner_name || 'Miembro'}</p>
+                      <p className="serial mt-0.5">{r.winner_tier ? `Miembro ${tierLabel(r.winner_tier)}` : 'Miembro de Locura TCG'}</p>
                     </div>
                     <span className="ml-auto font-mono text-[11px] text-muted-foreground">
                       {r.draws_at
-                        ? new Date(r.draws_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                        ? new Date(r.draws_at).toLocaleDateString('es-PE', { month: 'short', day: 'numeric' })
                         : ''}
                     </span>
                   </div>

@@ -32,27 +32,27 @@ export function RaffleCard({ raffle }: { raffle: Raffle }) {
             {GAME_LABELS[raffle.game] || raffle.game}
           </span>
           <span className="rounded-full bg-gold/15 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-gold ring-1 ring-gold/40">
-            ${value.toLocaleString('en-US')}
+            US${value.toLocaleString('es-PE')}
           </span>
         </div>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <p className="serial">{raffle.kicker || 'Live raffle'}</p>
+        <p className="serial">{raffle.kicker || 'Sorteo activo'}</p>
         <h3 className="mt-2 font-heading text-lg font-semibold leading-snug text-foreground">{raffle.prize_name}</h3>
 
         <div className="mt-4 flex items-center gap-2 rounded-lg border border-border bg-background/60 px-3 py-2">
           <Ticket className="h-3.5 w-3.5 text-primary" />
           <span className="font-mono text-xs tracking-wide text-foreground">{raffle.entry_cost_points} pts</span>
-          <span className="text-xs text-muted-foreground">per entry</span>
+          <span className="text-xs text-muted-foreground">por boleto</span>
           <ArrowUpRight className="ml-auto h-3.5 w-3.5 text-muted-foreground transition-colors group-hover:text-primary" />
         </div>
 
         <div className="mt-5">
           <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-            <span className="font-mono">{entries.toLocaleString('en-US')} entries</span>
-            <span className="font-mono">{pct}% to full</span>
+            <span className="font-mono">{entries.toLocaleString('es-PE')} boletos</span>
+            <span className="font-mono">{pct}% completo</span>
           </div>
           <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-secondary">
             <div
@@ -61,7 +61,7 @@ export function RaffleCard({ raffle }: { raffle: Raffle }) {
             />
           </div>
           <div className="mt-3 flex items-center justify-between">
-            <span className="serial">Closes in</span>
+            <span className="serial">Cierra en</span>
             <Countdown target={raffle.draws_at} />
           </div>
         </div>
