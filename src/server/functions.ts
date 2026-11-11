@@ -12,6 +12,7 @@ import {
   verifyPassword,
 } from './auth.server'
 import { createCharge, culqiConfigured } from './culqi.server'
+import { drawDueRaffles } from './draw.server'
 import { getTier, isTierId } from '@/lib/tiers'
 import type { ClubData, Entry, Membership, PointTransaction, Raffle, User } from '@/lib/types'
 
@@ -117,6 +118,7 @@ export const resetPassword = createServerFn({ method: 'POST' })
 // ---------- Raffles ----------
 
 export const listRaffles = createServerFn({ method: 'GET' }).handler(async (): Promise<Raffle[]> => {
+  drawDueRaffles()
   return db
     .prepare(
       `SELECT * FROM raffles WHERE status IN ('live', 'drawn')
@@ -130,6 +132,7 @@ export const listRaffles = createServerFn({ method: 'GET' }).handler(async (): P
 export const getRaffle = createServerFn({ method: 'GET' })
   .validator((d: { id: string }) => ({ id: String(d.id) }))
   .handler(async ({ data }): Promise<Raffle | null> => {
+    drawDueRaffles()
     const raffle = db
       .prepare(`SELECT * FROM raffles WHERE id = ? AND status != 'draft'`)
       .get(data.id) as Raffle | undefined

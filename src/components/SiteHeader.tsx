@@ -13,7 +13,7 @@ const NAV = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, user, logout } = useAuth()
   const close = () => setOpen(false)
 
   return (
@@ -37,6 +37,11 @@ export function SiteHeader() {
         <div className="hidden items-center gap-4 md:flex">
           {isAuthenticated ? (
             <>
+              {user?.is_admin && (
+                <Link to="/admin" className="text-sm text-primary transition-colors hover:text-foreground">
+                  Admin
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={logout}
@@ -84,6 +89,11 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            {user?.is_admin && (
+              <Link to="/admin" onClick={close} className="rounded-lg px-2 py-3 text-base text-primary">
+                Admin
+              </Link>
+            )}
             {isAuthenticated ? (
               <button
                 type="button"

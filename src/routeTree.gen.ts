@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedRouteImport } from './routes/_authed'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MembershipRouteImport } from './routes/membership'
@@ -19,8 +20,12 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RulesRouteImport } from './routes/rules'
 import { Route as WinnersRouteImport } from './routes/winners'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as RafflesIndexRouteImport } from './routes/raffles/index'
 import { Route as RafflesRaffleIdRouteImport } from './routes/raffles/$raffleId'
+import { Route as UploadsFileRouteImport } from './routes/uploads/$file'
+import { Route as AdminRafflesRaffleIdRouteImport } from './routes/admin/raffles/$raffleId'
+import { Route as AdminRafflesNewRouteImport } from './routes/admin/raffles/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,6 +34,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -71,6 +81,11 @@ const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const RafflesIndexRoute = RafflesIndexRouteImport.update({
   id: '/raffles/',
   path: '/raffles/',
@@ -81,9 +96,25 @@ const RafflesRaffleIdRoute = RafflesRaffleIdRouteImport.update({
   path: '/raffles/$raffleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UploadsFileRoute = UploadsFileRouteImport.update({
+  id: '/uploads/$file',
+  path: '/uploads/$file',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRafflesRaffleIdRoute = AdminRafflesRaffleIdRouteImport.update({
+  id: '/raffles/$raffleId',
+  path: '/raffles/$raffleId',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRafflesNewRoute = AdminRafflesNewRouteImport.update({
+  id: '/raffles/new',
+  path: '/raffles/new',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/membership': typeof MembershipRoute
@@ -93,7 +124,11 @@ export interface FileRoutesByFullPath {
   '/winners': typeof WinnersRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/raffles/$raffleId': typeof RafflesRaffleIdRoute
+  '/uploads/$file': typeof UploadsFileRoute
+  '/admin/': typeof AdminIndexRoute
   '/raffles/': typeof RafflesIndexRoute
+  '/admin/raffles/$raffleId': typeof AdminRafflesRaffleIdRoute
+  '/admin/raffles/new': typeof AdminRafflesNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -106,12 +141,17 @@ export interface FileRoutesByTo {
   '/winners': typeof WinnersRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/raffles/$raffleId': typeof RafflesRaffleIdRoute
+  '/uploads/$file': typeof UploadsFileRoute
+  '/admin': typeof AdminIndexRoute
   '/raffles': typeof RafflesIndexRoute
+  '/admin/raffles/$raffleId': typeof AdminRafflesRaffleIdRoute
+  '/admin/raffles/new': typeof AdminRafflesNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/membership': typeof MembershipRoute
@@ -121,12 +161,17 @@ export interface FileRoutesById {
   '/winners': typeof WinnersRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
   '/raffles/$raffleId': typeof RafflesRaffleIdRoute
+  '/uploads/$file': typeof UploadsFileRoute
+  '/admin/': typeof AdminIndexRoute
   '/raffles/': typeof RafflesIndexRoute
+  '/admin/raffles/$raffleId': typeof AdminRafflesRaffleIdRoute
+  '/admin/raffles/new': typeof AdminRafflesNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/forgot-password'
     | '/login'
     | '/membership'
@@ -136,7 +181,11 @@ export interface FileRouteTypes {
     | '/winners'
     | '/dashboard'
     | '/raffles/$raffleId'
+    | '/uploads/$file'
+    | '/admin/'
     | '/raffles/'
+    | '/admin/raffles/$raffleId'
+    | '/admin/raffles/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -149,11 +198,16 @@ export interface FileRouteTypes {
     | '/winners'
     | '/dashboard'
     | '/raffles/$raffleId'
+    | '/uploads/$file'
+    | '/admin'
     | '/raffles'
+    | '/admin/raffles/$raffleId'
+    | '/admin/raffles/new'
   id:
     | '__root__'
     | '/'
     | '/_authed'
+    | '/admin'
     | '/forgot-password'
     | '/login'
     | '/membership'
@@ -163,12 +217,17 @@ export interface FileRouteTypes {
     | '/winners'
     | '/_authed/dashboard'
     | '/raffles/$raffleId'
+    | '/uploads/$file'
+    | '/admin/'
     | '/raffles/'
+    | '/admin/raffles/$raffleId'
+    | '/admin/raffles/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   MembershipRoute: typeof MembershipRoute
@@ -177,6 +236,7 @@ export interface RootRouteChildren {
   RulesRoute: typeof RulesRoute
   WinnersRoute: typeof WinnersRoute
   RafflesRaffleIdRoute: typeof RafflesRaffleIdRoute
+  UploadsFileRoute: typeof UploadsFileRoute
   RafflesIndexRoute: typeof RafflesIndexRoute
 }
 
@@ -194,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -252,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedDashboardRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/raffles/': {
       id: '/raffles/'
       path: '/raffles'
@@ -265,6 +339,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/raffles/$raffleId'
       preLoaderRoute: typeof RafflesRaffleIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/uploads/$file': {
+      id: '/uploads/$file'
+      path: '/uploads/$file'
+      fullPath: '/uploads/$file'
+      preLoaderRoute: typeof UploadsFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/raffles/$raffleId': {
+      id: '/admin/raffles/$raffleId'
+      path: '/raffles/$raffleId'
+      fullPath: '/admin/raffles/$raffleId'
+      preLoaderRoute: typeof AdminRafflesRaffleIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/raffles/new': {
+      id: '/admin/raffles/new'
+      path: '/raffles/new'
+      fullPath: '/admin/raffles/new'
+      preLoaderRoute: typeof AdminRafflesNewRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
@@ -280,9 +375,24 @@ const AuthedRouteChildren: AuthedRouteChildren = {
 const AuthedRouteWithChildren =
   AuthedRoute._addFileChildren(AuthedRouteChildren)
 
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminRafflesRaffleIdRoute: typeof AdminRafflesRaffleIdRoute
+  AdminRafflesNewRoute: typeof AdminRafflesNewRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+  AdminRafflesRaffleIdRoute: AdminRafflesRaffleIdRoute,
+  AdminRafflesNewRoute: AdminRafflesNewRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   MembershipRoute: MembershipRoute,
@@ -291,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   RulesRoute: RulesRoute,
   WinnersRoute: WinnersRoute,
   RafflesRaffleIdRoute: RafflesRaffleIdRoute,
+  UploadsFileRoute: UploadsFileRoute,
   RafflesIndexRoute: RafflesIndexRoute,
 }
 export const routeTree = rootRouteImport

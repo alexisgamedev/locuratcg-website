@@ -100,8 +100,13 @@ export function now() {
   return new Date().toISOString()
 }
 
+const DB_FILE = process.env.DATABASE_PATH || path.join(process.cwd(), 'data', 'pullclub.db')
+
+/** Uploaded prize images live next to the database, so they're kept on the same disk/volume. */
+export const UPLOADS_DIR = path.join(path.dirname(DB_FILE), 'uploads')
+
 function open() {
-  const file = process.env.DATABASE_PATH || path.join(process.cwd(), 'data', 'pullclub.db')
+  const file = DB_FILE
   fs.mkdirSync(path.dirname(file), { recursive: true })
   const db = new Db(file)
   db.exec(SCHEMA)

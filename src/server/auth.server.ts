@@ -54,7 +54,22 @@ export function currentUser(): User | null {
        WHERE s.token = ? AND s.expires_at > ?`,
     )
     .get(token, now()) as User | undefined
-  return row ?? null
+  return row ? { ...row, is_admin: isAdminEmail(row.email) } : null
+}
+
+/** Admins are the emails listed (comma-separated) in the ADMIN_EMAILS environment variable. */
+export function isAdminEmail(email: string) {
+  const admins = (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+  return admins.includes(email.toLowerCase())
+}
+
+export function requireAdmin(): User {
+  const user = requireUser()
+  if (!user.is_admin) throw new Error("You don't have access to the admin area.")
+  return user
 }
 
 export function requireUser(): User {

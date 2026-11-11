@@ -25,6 +25,8 @@ export interface User {
   id: string
   email: string
   full_name: string
+  /** True when the email is listed in the ADMIN_EMAILS environment variable */
+  is_admin?: boolean
 }
 
 export interface Membership {
@@ -63,4 +65,26 @@ export interface ClubData {
   membership: Membership | null
   entries: Entry[]
   transactions: PointTransaction[]
+}
+
+export interface RaffleEntrant {
+  user_id: string
+  email: string
+  full_name: string
+  tier: string | null
+  tickets: number
+  points_spent: number
+}
+
+export interface RaffleInput {
+  id?: string
+  game: Game
+  prize_name: string
+  kicker: string
+  prize_image: string
+  retail_value: number
+  entry_cost_points: number
+  entry_goal: number
+  draws_at: string | null
+  status: 'draft' | 'live'
 }
