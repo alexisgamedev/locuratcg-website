@@ -33,7 +33,7 @@ export async function createCharge(opts: {
     merchant_message?: string
   }
   if (!res.ok || !body.id) {
-    throw new Error(body.user_message || body.merchant_message || 'The payment was declined.')
+    throw new Error(body.user_message || body.merchant_message || 'El pago fue rechazado.')
   }
   return { id: body.id }
 }

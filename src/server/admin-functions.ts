@@ -56,28 +56,28 @@ export const adminGetRaffle = createServerFn({ method: 'GET' })
 function validateRaffle(d: RaffleInput): RaffleInput {
   const num = (v: unknown, label: string, min: number) => {
     const n = Number(v)
-    if (!Number.isFinite(n) || n < min) throw new Error(`${label} must be at least ${min}.`)
+    if (!Number.isFinite(n) || n < min) throw new Error(`${label} debe ser al menos ${min}.`)
     return n
   }
-  if (!(d.game in GAME_LABELS)) throw new Error('Pick a game.')
+  if (!(d.game in GAME_LABELS)) throw new Error('Elige un juego.')
   const prize_name = String(d.prize_name ?? '').trim()
-  if (!prize_name) throw new Error('Give the prize a name.')
-  if (d.status !== 'draft' && d.status !== 'live') throw new Error('Status must be draft or live.')
+  if (!prize_name) throw new Error('Ponle un nombre al premio.')
+  if (d.status !== 'draft' && d.status !== 'live') throw new Error('El estado debe ser borrador o activo.')
 
   let draws_at: string | null = null
   if (d.draws_at) {
     const t = new Date(d.draws_at)
-    if (Number.isNaN(t.getTime())) throw new Error('The draw date is not valid.')
+    if (Number.isNaN(t.getTime())) throw new Error('La fecha del sorteo no es válida.')
     draws_at = t.toISOString()
   }
   if (d.status === 'live') {
-    if (!draws_at) throw new Error('Set a draw date before publishing.')
-    if (new Date(draws_at).getTime() <= Date.now()) throw new Error('The draw date must be in the future.')
+    if (!draws_at) throw new Error('Define una fecha de sorteo antes de publicar.')
+    if (new Date(draws_at).getTime() <= Date.now()) throw new Error('La fecha del sorteo debe ser futura.')
   }
 
   const prize_image = String(d.prize_image ?? '').trim()
   if (prize_image && !/^(https:\/\/|\/uploads\/)/.test(prize_image)) {
-    throw new Error('The image must be an uploaded file or an https:// link.')
+    throw new Error('La imagen debe ser un archivo subido o un enlace https://.')
   }
 
   return {
@@ -86,9 +86,9 @@ function validateRaffle(d: RaffleInput): RaffleInput {
     prize_name: prize_name.slice(0, 160),
     kicker: String(d.kicker ?? '').trim().slice(0, 60),
     prize_image,
-    retail_value: num(d.retail_value, 'Retail value', 0),
-    entry_cost_points: Math.round(num(d.entry_cost_points, 'Points per entry', 1)),
-    entry_goal: Math.round(num(d.entry_goal, 'Entry goal', 1)),
+    retail_value: num(d.retail_value, 'El valor comercial', 0),
+    entry_cost_points: Math.round(num(d.entry_cost_points, 'Los puntos por boleto', 1)),
+    entry_goal: Math.round(num(d.entry_goal, 'La meta de boletos', 1)),
     draws_at,
     status: d.status,
   }
@@ -116,8 +116,8 @@ export const saveRaffle = createServerFn({ method: 'POST' })
       const existing = db.prepare('SELECT status FROM raffles WHERE id = ?').get(data.id) as
         | { status: string }
         | undefined
-      if (!existing) throw new Error('Raffle not found.')
-      if (existing.status === 'drawn') throw new Error('This raffle has already been drawn and can no longer be edited.')
+      if (!existing) throw new Error('Sorteo no encontrado.')
+      if (existing.status === 'drawn') throw new Error('Este sorteo ya se realizó y no se puede editar.')
       db.prepare(
         `UPDATE raffles SET game = @game, prize_name = @prize_name, kicker = @kicker, prize_image = @prize_image,
            retail_value = @retail_value, entry_cost_points = @entry_cost_points, entry_goal = @entry_goal,
@@ -143,7 +143,7 @@ export const deleteRaffle = createServerFn({ method: 'POST' })
     requireAdmin()
     const { n } = db.prepare('SELECT COUNT(*) AS n FROM entries WHERE raffle_id = ?').get(data.id) as { n: number }
     if (n > 0) {
-      throw new Error("Members have already entered this raffle, so it can't be deleted. Draw it instead.")
+      throw new Error('Ya hay miembros con boletos en este sorteo, así que no se puede eliminar. Mejor sortéalo.')
     }
     db.prepare('DELETE FROM raffles WHERE id = ?').run(data.id)
     return { ok: true }
@@ -159,16 +159,16 @@ export const drawRaffleNow = createServerFn({ method: 'POST' })
 /** Saves an uploaded prize image to the uploads folder and returns its URL. */
 export const uploadImage = createServerFn({ method: 'POST' })
   .validator((d: FormData) => {
-    if (!(d instanceof FormData)) throw new Error('Expected a file upload.')
+    if (!(d instanceof FormData)) throw new Error('Se esperaba un archivo.')
     const file = d.get('file')
-    if (!(file instanceof File)) throw new Error('Choose an image to upload.')
+    if (!(file instanceof File)) throw new Error('Elige una imagen para subir.')
     return file
   })
   .handler(async ({ data: file }) => {
     requireAdmin()
     const ext = IMAGE_TYPES[file.type]
-    if (!ext) throw new Error('Upload a JPG, PNG, WebP or GIF image.')
-    if (file.size > MAX_IMAGE_BYTES) throw new Error('Images must be 5 MB or smaller.')
+    if (!ext) throw new Error('Sube una imagen JPG, PNG, WebP o GIF.')
+    if (file.size > MAX_IMAGE_BYTES) throw new Error('Las imágenes deben pesar 5 MB o menos.')
     fs.mkdirSync(UPLOADS_DIR, { recursive: true })
     const name = `${randomBytes(12).toString('hex')}.${ext}`
     fs.writeFileSync(path.join(UPLOADS_DIR, name), Buffer.from(await file.arrayBuffer()))

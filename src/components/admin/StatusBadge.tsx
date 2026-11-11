@@ -6,6 +6,8 @@ const STYLES: Record<string, string> = {
   drawn: 'bg-gold/15 text-gold ring-gold/40',
 }
 
+const LABELS: Record<string, string> = { draft: 'Borrador', live: 'Activo', drawn: 'Sorteado' }
+
 export function StatusBadge({ status }: { status: string }) {
   return (
     <span
@@ -14,7 +16,7 @@ export function StatusBadge({ status }: { status: string }) {
         STYLES[status] ?? STYLES.draft,
       )}
     >
-      {status}
+      {LABELS[status] ?? status}
     </span>
   )
 }

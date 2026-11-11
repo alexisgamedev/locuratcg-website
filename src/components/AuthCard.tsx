@@ -19,7 +19,7 @@ export function AuthCard({
       <div className="pointer-events-none absolute inset-0 halo-grid opacity-50" />
       <div className="relative w-full max-w-md">
         <Link to="/" className="mb-8 block text-center font-display text-[13px] tracking-[0.22em]">
-          PULL CLUB
+          LOCURA TCG
         </Link>
         <div className="mb-8 text-center">
           <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary">

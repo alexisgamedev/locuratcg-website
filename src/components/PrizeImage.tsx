@@ -16,7 +16,7 @@ export function PrizeImage({ src, alt, className }: { src?: string | null; alt: 
         />
       ) : (
         <span className="absolute inset-0 grid place-items-center bg-gradient-to-br from-primary/10 via-secondary to-holo/10">
-          <span className="serial">No image</span>
+          <span className="serial">Sin imagen</span>
         </span>
       )}
     </span>

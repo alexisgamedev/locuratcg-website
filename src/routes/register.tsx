@@ -8,7 +8,7 @@ import { register } from '@/server/functions'
 
 export const Route = createFileRoute('/register')({
   validateSearch: (s: Record<string, unknown>): { returnTo?: string } => ({ returnTo: typeof s.returnTo === 'string' ? s.returnTo : undefined }),
-  head: () => ({ meta: [{ title: 'Create account — Pull Club' }] }),
+  head: () => ({ meta: [{ title: 'Crear cuenta — Locura TCG' }] }),
   component: RegisterPage,
 })
 
@@ -27,7 +27,7 @@ function RegisterPage() {
     e.preventDefault()
     setError('')
     if (password !== confirm) {
-      setError('Passwords do not match')
+      setError('Las contraseñas no coinciden')
       return
     }
     setBusy(true)
@@ -36,18 +36,18 @@ function RegisterPage() {
       queryClient.setQueryData(sessionQuery.queryKey, user)
       navigate({ href: safeReturnTo(returnTo) })
     } catch (err) {
-      setError((err as Error).message || 'Registration failed')
+      setError((err as Error).message || 'No se pudo crear la cuenta')
       setBusy(false)
     }
   }
 
   return (
-    <AuthCard icon={UserPlus} title="Create your account" subtitle="Sign up to get started">
+    <AuthCard icon={UserPlus} title="Crea tu cuenta" subtitle="Regístrate para empezar">
       <FormError>{error}</FormError>
       <form onSubmit={onSubmit} className="space-y-4">
         <Field
           id="reg-name"
-          label="Name"
+          label="Nombre"
           icon={User}
           autoComplete="name"
           placeholder="Ash Ketchum"
@@ -56,22 +56,22 @@ function RegisterPage() {
         />
         <Field
           id="reg-email"
-          label="Email"
+          label="Correo electrónico"
           icon={Mail}
           type="email"
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder="tu@correo.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         <Field
           id="reg-password"
-          label="Password"
+          label="Contraseña"
           icon={Lock}
           type="password"
           autoComplete="new-password"
-          placeholder="At least 8 characters"
+          placeholder="Mínimo 8 caracteres"
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -79,7 +79,7 @@ function RegisterPage() {
         />
         <Field
           id="reg-confirm"
-          label="Confirm password"
+          label="Confirmar contraseña"
           icon={Lock}
           type="password"
           autoComplete="new-password"
@@ -88,14 +88,14 @@ function RegisterPage() {
           onChange={(e) => setConfirm(e.target.value)}
           required
         />
-        <SubmitButton busy={busy} busyLabel="Creating account...">
-          Create account
+        <SubmitButton busy={busy} busyLabel="Creando cuenta...">
+          Crear cuenta
         </SubmitButton>
       </form>
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Already have an account?{' '}
+        ¿Ya tienes una cuenta?{' '}
         <Link to="/login" search={{ returnTo }} className="font-medium text-primary hover:underline">
-          Log in
+          Inicia sesión
         </Link>
       </p>
     </AuthCard>

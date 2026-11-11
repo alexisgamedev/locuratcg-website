@@ -26,13 +26,13 @@ export const getSession = createServerFn({ method: 'GET' }).handler(async (): Pr
 
 function cleanEmail(v: unknown) {
   const email = String(v ?? '').trim().toLowerCase()
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.')
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Ingresa un correo electrónico válido.')
   return email
 }
 
 function cleanPassword(v: unknown) {
   const password = String(v ?? '')
-  if (password.length < 8) throw new Error('Password must be at least 8 characters.')
+  if (password.length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres.')
   return password
 }
 
@@ -44,7 +44,7 @@ export const register = createServerFn({ method: 'POST' })
   }))
   .handler(async ({ data }) => {
     const exists = db.prepare('SELECT 1 FROM users WHERE email = ?').get(data.email)
-    if (exists) throw new Error('An account with that email already exists. Log in instead.')
+    if (exists) throw new Error('Ya existe una cuenta con ese correo. Inicia sesión.')
     const user = createUser(data.email, data.password, data.fullName)
     startSession(user.id)
     return user
@@ -60,7 +60,7 @@ export const login = createServerFn({ method: 'POST' })
       .prepare('SELECT id, email, full_name, password_hash FROM users WHERE email = ?')
       .get(data.email) as (User & { password_hash: string }) | undefined
     if (!row || !verifyPassword(data.password, row.password_hash)) {
-      throw new Error('Invalid email or password')
+      throw new Error('Correo o contraseña incorrectos')
     }
     startSession(row.id)
     return { id: row.id, email: row.email, full_name: row.full_name } satisfies User
@@ -102,7 +102,7 @@ export const resetPassword = createServerFn({ method: 'POST' })
     const row = db
       .prepare('SELECT user_id FROM password_resets WHERE token = ? AND expires_at > ?')
       .get(data.token, now()) as { user_id: string } | undefined
-    if (!row) throw new Error('This reset link has expired. Request a new one.')
+    if (!row) throw new Error('Este enlace para restablecer la contraseña expiró. Solicita uno nuevo.')
     db.transaction(() => {
       db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(
         hashPassword(data.password),
@@ -162,7 +162,7 @@ export const enterRaffle = createServerFn({ method: 'POST' })
   .validator((d: { raffleId: string; entries: number }) => {
     const entries = Math.floor(Number(d.entries))
     if (!Number.isFinite(entries) || entries < 1 || entries > MAX_ENTRIES_PER_ORDER) {
-      throw new Error(`Choose between 1 and ${MAX_ENTRIES_PER_ORDER} entries.`)
+      throw new Error(`Elige entre 1 y ${MAX_ENTRIES_PER_ORDER} boletos.`)
     }
     return { raffleId: String(d.raffleId), entries }
   })
@@ -174,16 +174,16 @@ export const enterRaffle = createServerFn({ method: 'POST' })
       const raffle = db.prepare('SELECT * FROM raffles WHERE id = ?').get(data.raffleId) as
         | Raffle
         | undefined
-      if (!raffle || raffle.status !== 'live') throw new Error('This raffle is closed.')
+      if (!raffle || raffle.status !== 'live') throw new Error('Este sorteo está cerrado.')
       if (raffle.draws_at && new Date(raffle.draws_at).getTime() <= Date.now()) {
-        throw new Error('Entries for this raffle have closed.')
+        throw new Error('Ya no se aceptan boletos para este sorteo.')
       }
 
       const membership = getMembership(user.id)
-      if (!membership) throw new Error('Join a tier to start entering raffles.')
+      if (!membership) throw new Error('Únete a un nivel para empezar a participar en sorteos.')
 
       const cost = raffle.entry_cost_points * data.entries
-      if (membership.points_balance < cost) throw new Error("You don't have enough points for that.")
+      if (membership.points_balance < cost) throw new Error('No te alcanzan los puntos para eso.')
 
       db.prepare(
         'UPDATE memberships SET points_balance = points_balance - ?, updated_date = ? WHERE id = ?',
@@ -208,7 +208,7 @@ export const enterRaffle = createServerFn({ method: 'POST' })
         newId(),
         user.id,
         -cost,
-        `${data.entries} ${data.entries === 1 ? 'entry' : 'entries'} · ${raffle.prize_name}`,
+        `${data.entries} ${data.entries === 1 ? 'boleto' : 'boletos'} · ${raffle.prize_name}`,
         ts,
       )
 
@@ -219,7 +219,7 @@ export const enterRaffle = createServerFn({ method: 'POST' })
 export const cancelMembership = createServerFn({ method: 'POST' }).handler(async () => {
   const user = requireUser()
   const membership = getMembership(user.id)
-  if (!membership || membership.status !== 'active') throw new Error('No active membership to cancel.')
+  if (!membership || membership.status !== 'active') throw new Error('No tienes una membresía activa para cancelar.')
   db.prepare(`UPDATE memberships SET status = 'canceled', updated_date = ? WHERE id = ?`).run(
     now(),
     membership.id,
@@ -232,7 +232,7 @@ export const cancelMembership = createServerFn({ method: 'POST' }).handler(async
 /** Step 1: tell the browser what to charge, so it can open Culqi Checkout. */
 export const startCheckout = createServerFn({ method: 'POST' })
   .validator((d: { tier: string }) => {
-    if (!isTierId(d.tier)) throw new Error('Unknown tier.')
+    if (!isTierId(d.tier)) throw new Error('Nivel desconocido.')
     return { tier: d.tier }
   })
   .handler(async ({ data }) => {
@@ -243,21 +243,21 @@ export const startCheckout = createServerFn({ method: 'POST' })
       configured: true as const,
       publicKey: process.env.CULQI_PUBLIC_KEY as string,
       amountCents: tier.pricePen * 100,
-      title: 'Pull Club',
-      description: `${tier.name} membership — 1 month`,
+      title: 'Locura TCG',
+      description: `Membresía ${tier.name} — 1 mes`,
     }
   })
 
 /** Step 2: charge the card token from Culqi, then activate the membership and drop the points. */
 export const confirmPayment = createServerFn({ method: 'POST' })
   .validator((d: { tier: string; tokenId: string }) => {
-    if (!isTierId(d.tier)) throw new Error('Unknown tier.')
-    if (!d.tokenId) throw new Error('Missing payment token.')
+    if (!isTierId(d.tier)) throw new Error('Nivel desconocido.')
+    if (!d.tokenId) throw new Error('Falta el token de pago.')
     return { tier: d.tier, tokenId: String(d.tokenId) }
   })
   .handler(async ({ data }) => {
     const user = requireUser()
-    if (!culqiConfigured()) throw new Error("Payments aren't configured yet.")
+    if (!culqiConfigured()) throw new Error('Los pagos aún no están configurados.')
     const tier = getTier(data.tier)
     const amountCents = tier.pricePen * 100
 
@@ -265,7 +265,7 @@ export const confirmPayment = createServerFn({ method: 'POST' })
       tokenId: data.tokenId,
       amountCents,
       email: user.email,
-      description: `Pull Club ${tier.name} membership`,
+      description: `Membresía ${tier.name} de Locura TCG`,
     })
 
     const ts = now()
@@ -292,7 +292,7 @@ export const confirmPayment = createServerFn({ method: 'POST' })
 
       db.prepare(
         'INSERT INTO point_transactions (id, user_id, amount, description, created_date) VALUES (?, ?, ?, ?, ?)',
-      ).run(newId(), user.id, tier.points, `${tier.name} membership · monthly points`, ts)
+      ).run(newId(), user.id, tier.points, `Membresía ${tier.name} · puntos mensuales`, ts)
     })()
 
     return { granted: tier.points }

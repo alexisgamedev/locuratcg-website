@@ -80,7 +80,7 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
       return saveRaffle({ data: input })
     },
     onSuccess: ({ id }, status) => {
-      toast.success(status === 'live' ? 'Raffle is live.' : 'Saved as draft.')
+      toast.success(status === 'live' ? 'El sorteo está activo.' : 'Guardado como borrador.')
       queryClient.invalidateQueries({ queryKey: ['admin'] })
       if (raffle) onSaved?.()
       else navigate({ to: '/admin/raffles/$raffleId', params: { raffleId: id } })
@@ -100,19 +100,19 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
     <form onSubmit={submit} className="mt-8 space-y-6 rounded-2xl border border-border bg-card p-6 sm:p-8">
       <div className="grid gap-6 sm:grid-cols-[180px_1fr]">
         <div>
-          <span className="text-sm font-medium text-foreground">Prize image</span>
+          <span className="text-sm font-medium text-foreground">Imagen del premio</span>
           <button
             type="button"
             onClick={() => fileInput.current?.click()}
             className="group relative mt-2 block w-full overflow-hidden rounded-xl border border-dashed border-border hover:border-primary/50"
           >
-            <PrizeImage src={form.prize_image} alt="Prize" className="aspect-[4/3] w-full" />
+            <PrizeImage src={form.prize_image} alt="Premio" className="aspect-[4/3] w-full" />
             <span className="absolute inset-0 grid place-items-center bg-black/50 text-xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
               {upload.isPending ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <span className="flex items-center gap-1.5">
-                  <ImageUp className="h-4 w-4" /> Upload
+                  <ImageUp className="h-4 w-4" /> Subir
                 </span>
               )}
             </span>
@@ -128,11 +128,11 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
               e.target.value = ''
             }}
           />
-          <p className="mt-1.5 text-xs text-muted-foreground">JPG, PNG or WebP, up to 5 MB. 4:3 looks best.</p>
+          <p className="mt-1.5 text-xs text-muted-foreground">JPG, PNG o WebP, hasta 5 MB. En formato 4:3 se ve mejor.</p>
         </div>
 
         <div className="space-y-5">
-          <Row label="Prize name">
+          <Row label="Nombre del premio">
             <input
               className={inputClass}
               value={form.prize_name}
@@ -142,7 +142,7 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
             />
           </Row>
           <div className="grid gap-5 sm:grid-cols-2">
-            <Row label="Game">
+            <Row label="Juego">
               <select className={inputClass} value={form.game} onChange={set('game')}>
                 {Object.entries(GAME_LABELS).map(([id, label]) => (
                   <option key={id} value={id}>
@@ -151,14 +151,14 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
                 ))}
               </select>
             </Row>
-            <Row label="Label" hint='Small text above the name, e.g. "Grail of the month".'>
-              <input className={inputClass} value={form.kicker} onChange={set('kicker')} placeholder="Sealed product" />
+            <Row label="Etiqueta" hint='Texto pequeño sobre el nombre, p. ej. "Grial del mes".'>
+              <input className={inputClass} value={form.kicker} onChange={set('kicker')} placeholder="Producto sellado" />
             </Row>
           </div>
         </div>
       </div>
 
-      <Row label="Or paste an image link" hint="Uploading replaces this. Leave as is if you uploaded a file.">
+      <Row label="O pega el enlace de una imagen" hint="Si subes un archivo, reemplaza este enlace. Déjalo como está si ya subiste uno.">
         <input
           className={inputClass}
           value={form.prize_image}
@@ -168,10 +168,10 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
       </Row>
 
       <div className="grid gap-5 sm:grid-cols-3">
-        <Row label="Retail value (USD)">
+        <Row label="Valor comercial (USD)">
           <input className={inputClass} type="number" min="0" step="1" value={form.retail_value} onChange={set('retail_value')} />
         </Row>
-        <Row label="Points per entry">
+        <Row label="Puntos por boleto">
           <input
             className={inputClass}
             type="number"
@@ -182,12 +182,12 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
             required
           />
         </Row>
-        <Row label="Entry goal" hint="Only drives the progress bar.">
+        <Row label="Meta de boletos" hint="Solo se usa para la barra de progreso.">
           <input className={inputClass} type="number" min="1" step="1" value={form.entry_goal} onChange={set('entry_goal')} required />
         </Row>
       </div>
 
-      <Row label="Draw date" hint="Entries close and the winner is drawn automatically at this time (your local time).">
+      <Row label="Fecha del sorteo" hint="A esta hora se cierran los boletos y se sortea al ganador automáticamente (tu hora local).">
         <input className={inputClass} type="datetime-local" value={form.draws_at} onChange={set('draws_at')} />
       </Row>
 
@@ -199,7 +199,7 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
             disabled={busy}
             className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground disabled:opacity-50"
           >
-            Save as draft
+            Guardar como borrador
           </button>
         )}
         {isLive && (
@@ -209,7 +209,7 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
             disabled={busy}
             className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-muted-foreground disabled:opacity-50"
           >
-            Unpublish
+            Despublicar
           </button>
         )}
         <button
@@ -217,7 +217,7 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
           disabled={busy}
           className="glow-ion rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-50"
         >
-          {save.isPending ? 'Saving…' : isLive ? 'Save changes' : 'Publish'}
+          {save.isPending ? 'Guardando…' : isLive ? 'Guardar cambios' : 'Publicar'}
         </button>
       </div>
     </form>

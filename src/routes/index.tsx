@@ -7,18 +7,18 @@ import { RaffleCard } from '@/components/RaffleCard'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { TierCard } from '@/components/TierCard'
-import { TIERS } from '@/lib/tiers'
+import { TIERS, tierLabel } from '@/lib/tiers'
 import type { Raffle } from '@/lib/types'
 import { listRaffles } from '@/server/functions'
 
 export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
-      { title: 'Pull Club — TCG prize raffles for Pokémon & One Piece collectors' },
+      { title: 'Locura TCG — Sorteos de premios TCG para coleccionistas de Pokémon y One Piece' },
       {
         name: 'description',
         content:
-          "A membership club for TCG collectors. Your plan adds points to your vault every month, and you spend them on entries for the Pokémon and One Piece prizes you're chasing.",
+          'Un club de membresía para coleccionistas de TCG. Tu plan suma puntos a tu bóveda cada mes y tú los usas en boletos para los premios de Pokémon y One Piece que estás buscando.',
       },
     ],
   }),
@@ -39,23 +39,23 @@ function Hero({ stats }: { stats: { label: string; value: string }[] }) {
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Season 04 · Pokémon &amp; One Piece
+            Temporada 04 · Pokémon y One Piece
           </p>
           <h1 className="mt-6 font-display text-[2.6rem] leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-[4.4rem]">
-            Keep the cards
+            Quédate con las cartas
             <br />
-            you're <span className="text-holo">chasing.</span>
+            que tanto <span className="text-holo">buscas.</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Your membership drops points into your vault every month. Spend them on entries for the exact Pokémon and
-            One Piece prizes you want — no bundles, no filler, no wasted tickets.
+            Tu membresía deposita puntos en tu bóveda cada mes. Úsalos en boletos para los premios de Pokémon y One
+            Piece que de verdad quieres: sin combos, sin relleno, sin boletos desperdiciados.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
               to="/membership"
               className="glow-ion inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
             >
-              Start your membership
+              Empieza tu membresía
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
@@ -63,7 +63,7 @@ function Hero({ stats }: { stats: { label: string; value: string }[] }) {
               className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card/60 px-7 py-3.5 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:bg-card"
             >
               <Ticket className="h-4 w-4 text-primary" />
-              See live raffles
+              Ver sorteos activos
             </Link>
           </div>
           <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-border pt-6">
@@ -80,11 +80,11 @@ function Hero({ stats }: { stats: { label: string; value: string }[] }) {
           <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-primary/20 via-transparent to-holo/20 blur-2xl" />
           <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card/80 p-3">
             <div className="relative overflow-hidden rounded-[1.25rem]">
-              <PrizeImage src={HERO_IMAGE} alt="Graded holo card under a spotlight" className="aspect-[4/5] w-full" />
+              <PrizeImage src={HERO_IMAGE} alt="Carta holo gradeada bajo un reflector" className="aspect-[4/5] w-full" />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
               <div className="absolute inset-x-4 bottom-4 flex items-end justify-between">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">This week's grail</p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">El grial de la semana</p>
                   <p className="mt-1 font-heading text-sm font-semibold text-white">Charizard ex · PSA 10</p>
                 </div>
                 <span className="rounded-full bg-black/60 px-2.5 py-1 font-mono text-[10px] text-white ring-1 ring-white/20">
@@ -94,13 +94,13 @@ function Hero({ stats }: { stats: { label: string; value: string }[] }) {
             </div>
           </div>
           <div className="absolute -left-4 top-8 hidden rounded-xl border border-border bg-background/90 px-4 py-3 backdrop-blur sm:block">
-            <p className="serial">Your vault</p>
+            <p className="serial">Tu bóveda</p>
             <p className="mt-1 flex items-center gap-1.5 font-mono text-sm text-primary">
               <Sparkles className="h-3.5 w-3.5" /> +400 pts
             </p>
           </div>
           <div className="absolute -right-3 bottom-16 hidden rounded-xl border border-border bg-background/90 px-4 py-3 backdrop-blur sm:block">
-            <p className="serial">Entry confirmed</p>
+            <p className="serial">Boleto confirmado</p>
             <p className="mt-1 font-mono text-sm text-foreground">#04,218</p>
           </div>
         </div>
@@ -113,20 +113,20 @@ const STEPS = [
   {
     n: '01',
     icon: Sparkles,
-    title: 'Pick your tier',
-    body: 'Rookie, Collector or Master. Each one sets how many vault points land in your account every month.',
+    title: 'Elige tu nivel',
+    body: 'Novato, Coleccionista o Maestro. Cada nivel define cuántos puntos llegan a tu bóveda cada mes.',
   },
   {
     n: '02',
     icon: Coins,
-    title: 'Points hit your vault',
-    body: 'Your allowance arrives automatically on each renewal. No codes, no claiming, no expiry while you stay a member.',
+    title: 'Los puntos llegan a tu bóveda',
+    body: 'Tus puntos llegan solos en cada renovación. Sin códigos, sin reclamos y sin vencimiento mientras sigas siendo miembro.',
   },
   {
     n: '03',
     icon: Target,
-    title: 'Spend them where it counts',
-    body: 'Drop points on the raffles you actually care about. Stack entries on one grail or spread them across ten prizes.',
+    title: 'Úsalos donde más importa',
+    body: 'Pon tus puntos en los sorteos que de verdad te interesan. Junta boletos en un solo grial o repártelos entre diez premios.',
   },
 ]
 
@@ -135,12 +135,12 @@ function HowItWorks() {
     <section id="how-it-works" className="border-y border-border/70 bg-card/30">
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
         <div className="max-w-2xl">
-          <p className="serial">How the club works</p>
+          <p className="serial">Cómo funciona el club</p>
           <h2 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-4xl">
-            Three moves. Then it's just luck.
+            Tres pasos. Lo demás es pura suerte.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Points are the only currency in the club — earn them monthly, aim them at whatever is on the table.
+            Los puntos son la única moneda del club: los ganas cada mes y los apuntas a lo que esté en juego.
           </p>
         </div>
         <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -170,16 +170,16 @@ function Tiers() {
     <section className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <p className="serial">Membership tiers</p>
+          <p className="serial">Niveles de membresía</p>
           <h2 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-4xl">
-            Points scale with the plan.
+            Más plan, más puntos.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Cancel anytime. Points already in your vault stay yours until the next draw.
+            Cancela cuando quieras. Los puntos que ya están en tu bóveda siguen siendo tuyos hasta el próximo sorteo.
           </p>
         </div>
         <Link to="/membership" className="serial transition-colors hover:text-primary">
-          Compare every perk →
+          Compara todos los beneficios →
         </Link>
       </div>
       <div className="mt-12 grid gap-5 lg:grid-cols-3">
@@ -187,13 +187,13 @@ function Tiers() {
           <TierCard
             key={tier.id}
             tier={tier}
-            priceSuffix="/mo"
+            priceSuffix="/mes"
             action={
               <Link
                 to="/membership"
                 className={`relative mt-8 inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition-transform hover:-translate-y-0.5 ${tier.featured ? 'glow-ion bg-primary text-primary-foreground' : 'border border-border bg-background/60 text-foreground hover:border-primary/40'}`}
               >
-                Choose {tier.name}
+                Elegir {tier.name}
               </Link>
             }
           />
@@ -210,18 +210,18 @@ function HallOfFame({ winners }: { winners: Raffle[] }) {
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-20">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="serial">Hall of fame</p>
+            <p className="serial">Salón de la fama</p>
             <h2 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-4xl">
-              Real members. Real pulls.
+              Miembros reales. Pulls reales.
             </h2>
           </div>
           <Link to="/winners" className="serial transition-colors hover:text-primary">
-            See all winners →
+            Ver todos los ganadores →
           </Link>
         </div>
         {shown.length === 0 ? (
           <p className="mt-10 text-sm text-muted-foreground">
-            The first draws are coming up. Winners land here as soon as each raffle closes.
+            Los primeros sorteos están por llegar. Los ganadores aparecerán aquí apenas cierre cada sorteo.
           </p>
         ) : (
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -229,20 +229,19 @@ function HallOfFame({ winners }: { winners: Raffle[] }) {
               <div key={w.id} className="rounded-2xl border border-border bg-background/60 p-5">
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-primary/25 to-holo/25 font-mono text-xs font-bold text-foreground ring-1 ring-border">
-                    {(w.winner_initials || 'PL').slice(0, 2)}
+                    {(w.winner_initials || 'LT').slice(0, 2)}
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{w.winner_name || 'Member'}</p>
-                    <p className="serial mt-1">{w.winner_tier ? `${w.winner_tier} member` : 'Pull Club member'}</p>
+                    <p className="text-sm font-semibold text-foreground">{w.winner_name || 'Miembro'}</p>
+                    <p className="serial mt-1">{w.winner_tier ? `Miembro ${tierLabel(w.winner_tier)}` : 'Miembro de Locura TCG'}</p>
                   </div>
                   <Trophy className="ml-auto h-4 w-4 text-gold" />
                 </div>
                 <p className="mt-4 text-sm leading-snug text-foreground/85">{w.prize_name}</p>
                 <p className="serial mt-3">
-                  Won{' '}
                   {w.draws_at
-                    ? new Date(w.draws_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                    : 'recently'}
+                    ? `Ganó el ${new Date(w.draws_at).toLocaleDateString('es-PE', { month: 'short', day: 'numeric' })}`
+                    : 'Ganó hace poco'}
                 </p>
               </div>
             ))}
@@ -255,28 +254,28 @@ function HallOfFame({ winners }: { winners: Raffle[] }) {
 
 const FAQ = [
   {
-    q: 'How do points turn into entries?',
-    a: 'Every raffle lists a point cost per entry. Pick a raffle, choose how many entries you want, and the points come straight out of your vault. Entries stack, so you can go deep on one prize or spread them out.',
+    q: '¿Cómo se convierten los puntos en boletos?',
+    a: 'Cada sorteo indica cuántos puntos cuesta un boleto. Elige un sorteo, escoge cuántos boletos quieres y los puntos se descuentan directo de tu bóveda. Los boletos se acumulan, así que puedes ir con todo por un premio o repartirlos.',
   },
   {
-    q: 'What happens to unused points?',
-    a: "They stay in your vault. Points don't disappear while your membership is active, so you can save up for a grail instead of spending them the day they arrive.",
+    q: '¿Qué pasa con los puntos que no uso?',
+    a: 'Se quedan en tu bóveda. Los puntos no desaparecen mientras tu membresía esté activa, así que puedes ahorrar para un grial en vez de gastarlos el mismo día que llegan.',
   },
   {
-    q: 'How are winners drawn?',
-    a: 'Each raffle has a published draw date. At that time every entry is loaded into a public random draw, and the winner is announced on the winners page and by email.',
+    q: '¿Cómo se eligen los ganadores?',
+    a: 'Cada sorteo tiene una fecha publicada. A esa hora, todos los boletos entran a un sorteo aleatorio público y el ganador se anuncia en la página de ganadores y por correo.',
   },
   {
-    q: 'Can I cancel my membership?',
-    a: 'Yes, anytime from your vault. You keep access until the end of the period you already paid for, and any entries already placed stay in their raffles.',
+    q: '¿Puedo cancelar mi membresía?',
+    a: 'Sí, cuando quieras desde tu bóveda. Mantienes el acceso hasta el final del periodo que ya pagaste, y los boletos que ya compraste se quedan en sus sorteos.',
   },
 ]
 
 function Faq() {
   return (
     <section className="mx-auto max-w-4xl px-5 py-16 lg:px-8 lg:py-24">
-      <p className="serial">Questions</p>
-      <h2 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-4xl">Before you join.</h2>
+      <p className="serial">Preguntas</p>
+      <h2 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-4xl">Antes de unirte.</h2>
       <div className="mt-10 divide-y divide-border border-y border-border">
         {FAQ.map((item) => (
           <details key={item.q} className="group py-5">
@@ -302,9 +301,9 @@ function HomePage() {
   const value = live.reduce((sum, r) => sum + Number(r.retail_value || 0), 0)
   const entries = live.reduce((sum, r) => sum + Number(r.entries_count || 0), 0)
   const stats = [
-    { label: 'Live prizes', value: String(live.length) },
-    { label: 'Value on the table', value: `$${value.toLocaleString('en-US')}` },
-    { label: 'Entries placed', value: entries.toLocaleString('en-US') },
+    { label: 'Premios activos', value: String(live.length) },
+    { label: 'Valor en juego', value: `US$${value.toLocaleString('es-PE')}` },
+    { label: 'Boletos jugados', value: entries.toLocaleString('es-PE') },
   ]
 
   return (
@@ -316,9 +315,9 @@ function HomePage() {
         <section id="raffles" className="mx-auto max-w-7xl px-5 pb-16 lg:px-8 lg:pb-24">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="serial">Live now</p>
+              <p className="serial">En vivo</p>
               <h2 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-4xl">
-                On the table right now
+                En juego ahora mismo
               </h2>
             </div>
             <GameFilter value={game} onChange={setGame} />
@@ -330,8 +329,8 @@ function HomePage() {
           </div>
           {shown.length === 0 && (
             <div className="mt-8 rounded-2xl border border-dashed border-border p-14 text-center">
-              <p className="font-heading text-lg text-foreground">Nothing open in this game right now.</p>
-              <p className="mt-2 text-sm text-muted-foreground">New raffles drop every week — check back soon.</p>
+              <p className="font-heading text-lg text-foreground">No hay sorteos abiertos de este juego por ahora.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Cada semana salen nuevos sorteos. ¡Vuelve pronto!</p>
             </div>
           )}
         </section>

@@ -4,7 +4,7 @@
 import { db, newId, now } from './db.mjs'
 
 const POINTS = { rookie: 150, collector: 400, master: 900 }
-const NAMES = { rookie: 'Rookie', collector: 'Collector', master: 'Master' }
+const NAMES = { rookie: 'Novato', collector: 'Coleccionista', master: 'Maestro' }
 const [email, tier = 'collector'] = process.argv.slice(2)
 
 if (!email || !POINTS[tier]) {
@@ -33,7 +33,7 @@ db.transaction(() => {
     ).run(newId(), user.id, tier, POINTS[tier], POINTS[tier], periodEnd, ts, ts)
   }
   db.prepare('INSERT INTO point_transactions (id, user_id, amount, description, created_date) VALUES (?, ?, ?, ?, ?)').run(
-    newId(), user.id, POINTS[tier], `${NAMES[tier]} membership · monthly points (granted)`, ts,
+    newId(), user.id, POINTS[tier], `Membresía ${NAMES[tier]} · puntos mensuales (otorgados)`, ts,
   )
 })()
 console.log(`${email} is now on ${NAMES[tier]} with +${POINTS[tier]} points.`)

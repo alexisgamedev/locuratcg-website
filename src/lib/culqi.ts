@@ -21,7 +21,7 @@ function loadCulqi(): Promise<any> {
     s.onload = () => resolve(window.Culqi)
     s.onerror = () => {
       loading = null
-      reject(new Error("Couldn't open the Culqi checkout. Check your connection and try again."))
+      reject(new Error('No pudimos abrir el pago de Culqi. Revisa tu conexión e inténtalo de nuevo.'))
     }
     document.head.appendChild(s)
   })
@@ -55,7 +55,7 @@ export async function openCulqiCheckout(opts: {
         resolve(Culqi.token.id)
         return
       }
-      if (Culqi.error) reject(new Error(Culqi.error.user_message || "The card details weren't accepted."))
+      if (Culqi.error) reject(new Error(Culqi.error.user_message || 'No se aceptaron los datos de la tarjeta.'))
     }
     Culqi.open()
   })
