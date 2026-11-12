@@ -12,11 +12,9 @@ import {
   verifyPassword,
 } from './auth.server'
 import { createCharge, culqiConfigured } from './culqi.server'
-import { drawDueRaffles } from './draw.server'
-import { getTier, isTierId } from '@/lib/tiers'
-import type { ClubData, Entry, Membership, PointTransaction, Raffle, User } from '@/lib/types'
-
-const MAX_ENTRIES_PER_ORDER = 20
+import { countActiveMembers, drawDueRaffles } from './draw.server'
+import { isMembershipActive, PLAN } from '@/lib/plan'
+import type { ClubData, Entry, Membership, Raffle, User } from '@/lib/types'
 
 // ---------- Auth ----------
 
@@ -117,9 +115,16 @@ export const resetPassword = createServerFn({ method: 'POST' })
 
 // ---------- Raffles ----------
 
+/** While a raffle is live, its participants are simply everyone with an active membership. */
+function withParticipants<T extends Raffle>(raffles: T[]): T[] {
+  if (!raffles.some((r) => r.status === 'live')) return raffles
+  const members = countActiveMembers()
+  return raffles.map((r) => (r.status === 'live' ? { ...r, entries_count: members } : r))
+}
+
 export const listRaffles = createServerFn({ method: 'GET' }).handler(async (): Promise<Raffle[]> => {
   drawDueRaffles()
-  return db
+  const raffles = db
     .prepare(
       `SELECT * FROM raffles WHERE status IN ('live', 'drawn')
        ORDER BY CASE status WHEN 'live' THEN 0 ELSE 1 END,
@@ -127,6 +132,7 @@ export const listRaffles = createServerFn({ method: 'GET' }).handler(async (): P
                 draws_at DESC`,
     )
     .all() as Raffle[]
+  return withParticipants(raffles)
 })
 
 export const getRaffle = createServerFn({ method: 'GET' })
@@ -136,10 +142,10 @@ export const getRaffle = createServerFn({ method: 'GET' })
     const raffle = db
       .prepare(`SELECT * FROM raffles WHERE id = ? AND status != 'draft'`)
       .get(data.id) as Raffle | undefined
-    return raffle ?? null
+    return raffle ? withParticipants([raffle])[0] : null
   })
 
-// ---------- Membership & vault ----------
+// ---------- Membership ----------
 
 function getMembership(userId: string) {
   return (db.prepare('SELECT * FROM memberships WHERE user_id = ?').get(userId) as Membership) ?? null
@@ -147,74 +153,18 @@ function getMembership(userId: string) {
 
 export const getMyClub = createServerFn({ method: 'POST' }).handler(async (): Promise<ClubData> => {
   const user = requireUser()
+  const membership = getMembership(user.id)
   return {
-    membership: getMembership(user.id),
+    membership,
+    isActive: isMembershipActive(membership),
     entries: db
-      .prepare('SELECT * FROM entries WHERE user_id = ? ORDER BY updated_date DESC')
+      .prepare(
+        `SELECT e.* FROM entries e JOIN raffles r ON r.id = e.raffle_id
+         WHERE e.user_id = ? AND r.status = 'drawn' ORDER BY e.created_date DESC LIMIT 50`,
+      )
       .all(user.id) as Entry[],
-    transactions: db
-      .prepare('SELECT * FROM point_transactions WHERE user_id = ? ORDER BY created_date DESC LIMIT 20')
-      .all(user.id) as PointTransaction[],
   }
 })
-
-export const enterRaffle = createServerFn({ method: 'POST' })
-  .validator((d: { raffleId: string; entries: number }) => {
-    const entries = Math.floor(Number(d.entries))
-    if (!Number.isFinite(entries) || entries < 1 || entries > MAX_ENTRIES_PER_ORDER) {
-      throw new Error(`Elige entre 1 y ${MAX_ENTRIES_PER_ORDER} boletos.`)
-    }
-    return { raffleId: String(d.raffleId), entries }
-  })
-  .handler(async ({ data }) => {
-    const user = requireUser()
-    const ts = now()
-
-    return db.transaction(() => {
-      const raffle = db.prepare('SELECT * FROM raffles WHERE id = ?').get(data.raffleId) as
-        | Raffle
-        | undefined
-      if (!raffle || raffle.status !== 'live') throw new Error('Este sorteo está cerrado.')
-      if (raffle.draws_at && new Date(raffle.draws_at).getTime() <= Date.now()) {
-        throw new Error('Ya no se aceptan boletos para este sorteo.')
-      }
-
-      const membership = getMembership(user.id)
-      if (!membership) throw new Error('Únete a un nivel para empezar a participar en sorteos.')
-
-      const cost = raffle.entry_cost_points * data.entries
-      if (membership.points_balance < cost) throw new Error('No te alcanzan los puntos para eso.')
-
-      db.prepare(
-        'UPDATE memberships SET points_balance = points_balance - ?, updated_date = ? WHERE id = ?',
-      ).run(cost, ts, membership.id)
-
-      db.prepare(
-        `INSERT INTO entries (id, user_id, raffle_id, raffle_title, game, tickets, points_spent, created_date, updated_date)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-         ON CONFLICT (user_id, raffle_id) DO UPDATE SET
-           tickets = tickets + excluded.tickets,
-           points_spent = points_spent + excluded.points_spent,
-           updated_date = excluded.updated_date`,
-      ).run(newId(), user.id, raffle.id, raffle.prize_name, raffle.game, data.entries, cost, ts, ts)
-
-      db.prepare(
-        'UPDATE raffles SET entries_count = entries_count + ?, updated_date = ? WHERE id = ?',
-      ).run(data.entries, ts, raffle.id)
-
-      db.prepare(
-        'INSERT INTO point_transactions (id, user_id, amount, description, created_date) VALUES (?, ?, ?, ?, ?)',
-      ).run(
-        newId(),
-        user.id,
-        -cost,
-        `${data.entries} ${data.entries === 1 ? 'boleto' : 'boletos'} · ${raffle.prize_name}`,
-        ts,
-      )
-
-      return { ok: true, balance: membership.points_balance - cost }
-    })()
-  })
 
 export const cancelMembership = createServerFn({ method: 'POST' }).handler(async () => {
   const user = requireUser()
@@ -230,70 +180,58 @@ export const cancelMembership = createServerFn({ method: 'POST' }).handler(async
 // ---------- Checkout (Culqi) ----------
 
 /** Step 1: tell the browser what to charge, so it can open Culqi Checkout. */
-export const startCheckout = createServerFn({ method: 'POST' })
-  .validator((d: { tier: string }) => {
-    if (!isTierId(d.tier)) throw new Error('Nivel desconocido.')
-    return { tier: d.tier }
-  })
-  .handler(async ({ data }) => {
-    requireUser()
-    const tier = getTier(data.tier)
-    if (!culqiConfigured()) return { configured: false as const }
-    return {
-      configured: true as const,
-      publicKey: process.env.CULQI_PUBLIC_KEY as string,
-      amountCents: tier.pricePen * 100,
-      title: 'Locura TCG',
-      description: `Membresía ${tier.name} — 1 mes`,
-    }
-  })
+export const startCheckout = createServerFn({ method: 'POST' }).handler(async () => {
+  requireUser()
+  if (!culqiConfigured()) return { configured: false as const }
+  return {
+    configured: true as const,
+    publicKey: process.env.CULQI_PUBLIC_KEY as string,
+    amountCents: PLAN.pricePen * 100,
+    title: 'Locura TCG',
+    description: `${PLAN.name} — 1 mes`,
+  }
+})
 
-/** Step 2: charge the card token from Culqi, then activate the membership and drop the points. */
+/** Step 2: charge the card token from Culqi, then start (or extend) the membership. */
 export const confirmPayment = createServerFn({ method: 'POST' })
-  .validator((d: { tier: string; tokenId: string }) => {
-    if (!isTierId(d.tier)) throw new Error('Nivel desconocido.')
+  .validator((d: { tokenId: string }) => {
     if (!d.tokenId) throw new Error('Falta el token de pago.')
-    return { tier: d.tier, tokenId: String(d.tokenId) }
+    return { tokenId: String(d.tokenId) }
   })
   .handler(async ({ data }) => {
     const user = requireUser()
     if (!culqiConfigured()) throw new Error('Los pagos aún no están configurados.')
-    const tier = getTier(data.tier)
-    const amountCents = tier.pricePen * 100
+    const amountCents = PLAN.pricePen * 100
 
     const charge = await createCharge({
       tokenId: data.tokenId,
       amountCents,
       email: user.email,
-      description: `Membresía ${tier.name} de Locura TCG`,
+      description: PLAN.name,
     })
 
     const ts = now()
-    const periodEnd = new Date(Date.now() + 30 * 864e5).toISOString()
-    db.transaction(() => {
+    return db.transaction(() => {
       db.prepare(
         `INSERT INTO payments (id, user_id, tier, amount_cents, currency, provider, provider_charge_id, status, created_date)
          VALUES (?, ?, ?, ?, 'PEN', 'culqi', ?, 'paid', ?)`,
-      ).run(newId(), user.id, tier.id, amountCents, charge.id, ts)
+      ).run(newId(), user.id, PLAN.id, amountCents, charge.id, ts)
 
+      // Paying while a period is still running adds a month on top of it.
       const existing = getMembership(user.id)
+      const from = isMembershipActive(existing) ? new Date(existing.current_period_end as string).getTime() : Date.now()
+      const periodEnd = new Date(from + PLAN.periodDays * 864e5).toISOString()
+
       if (existing) {
         db.prepare(
-          `UPDATE memberships SET tier = ?, status = 'active', monthly_points = ?,
-             points_balance = points_balance + ?, current_period_end = ?, updated_date = ?
-           WHERE id = ?`,
-        ).run(tier.id, tier.points, tier.points, periodEnd, ts, existing.id)
+          `UPDATE memberships SET tier = ?, status = 'active', current_period_end = ?, updated_date = ? WHERE id = ?`,
+        ).run(PLAN.id, periodEnd, ts, existing.id)
       } else {
         db.prepare(
           `INSERT INTO memberships (id, user_id, tier, status, points_balance, monthly_points, current_period_end, created_date, updated_date)
-           VALUES (?, ?, ?, 'active', ?, ?, ?, ?, ?)`,
-        ).run(newId(), user.id, tier.id, tier.points, tier.points, periodEnd, ts, ts)
+           VALUES (?, ?, ?, 'active', 0, 0, ?, ?, ?)`,
+        ).run(newId(), user.id, PLAN.id, periodEnd, ts, ts)
       }
-
-      db.prepare(
-        'INSERT INTO point_transactions (id, user_id, amount, description, created_date) VALUES (?, ?, ?, ?, ?)',
-      ).run(newId(), user.id, tier.points, `Membresía ${tier.name} · puntos mensuales`, ts)
+      return { periodEnd }
     })()
-
-    return { granted: tier.points }
   })

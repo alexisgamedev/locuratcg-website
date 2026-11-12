@@ -1,18 +1,17 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowUpRight, Ticket } from 'lucide-react'
+import { ArrowUpRight, Users } from 'lucide-react'
 import { GAME_LABELS } from '@/lib/games'
 import type { Raffle } from '@/lib/types'
 import { Countdown } from './Countdown'
 import { PrizeImage } from './PrizeImage'
 
-export function progressPercent(raffle: Pick<Raffle, 'entries_count' | 'entry_goal'>) {
-  const goal = Number(raffle.entry_goal) || 500
-  return Math.min(100, Math.round((Number(raffle.entries_count || 0) / goal) * 100))
+/** "1 miembro participa" / "24 miembros participan" */
+export function participantsLabel(count: number) {
+  const n = Number(count || 0)
+  return n === 1 ? '1 miembro participa' : `${n.toLocaleString('es-PE')} miembros participan`
 }
 
 export function RaffleCard({ raffle }: { raffle: Raffle }) {
-  const entries = Number(raffle.entries_count || 0)
-  const pct = progressPercent(raffle)
   const value = Number(raffle.retail_value || 0)
 
   return (
@@ -43,27 +42,14 @@ export function RaffleCard({ raffle }: { raffle: Raffle }) {
         <h3 className="mt-2 font-heading text-lg font-semibold leading-snug text-foreground">{raffle.prize_name}</h3>
 
         <div className="mt-4 flex items-center gap-2 rounded-lg border border-border bg-background/60 px-3 py-2">
-          <Ticket className="h-3.5 w-3.5 text-primary" />
-          <span className="font-mono text-xs tracking-wide text-foreground">{raffle.entry_cost_points} pts</span>
-          <span className="text-xs text-muted-foreground">por boleto</span>
+          <Users className="h-3.5 w-3.5 text-primary" />
+          <span className="text-xs text-muted-foreground">{participantsLabel(raffle.entries_count)}</span>
           <ArrowUpRight className="ml-auto h-3.5 w-3.5 text-muted-foreground transition-colors group-hover:text-primary" />
         </div>
 
-        <div className="mt-5">
-          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-            <span className="font-mono">{entries.toLocaleString('es-PE')} boletos</span>
-            <span className="font-mono">{pct}% completo</span>
-          </div>
-          <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-secondary">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-holo transition-all duration-700"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-          <div className="mt-3 flex items-center justify-between">
-            <span className="serial">Cierra en</span>
-            <Countdown target={raffle.draws_at} />
-          </div>
+        <div className="mt-auto flex items-center justify-between pt-5">
+          <span className="serial">Se sortea en</span>
+          <Countdown target={raffle.draws_at} />
         </div>
       </div>
     </Link>

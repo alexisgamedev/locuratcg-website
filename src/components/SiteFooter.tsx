@@ -23,7 +23,7 @@ const COLUMNS = [
     links: [
       { to: '/login', label: 'Iniciar sesión' },
       { to: '/register', label: 'Crear cuenta' },
-      { to: '/dashboard', label: 'Mi bóveda' },
+      { to: '/dashboard', label: 'Mi cuenta' },
     ],
   },
 ] as const
@@ -36,8 +36,8 @@ export function SiteFooter() {
           <div>
             <Logo />
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Un club de membresía para coleccionistas de TCG. Tu plan te recarga puntos cada mes y tú decides a qué
-              premios de Pokémon y One Piece van tus boletos.
+              Un club de membresía para coleccionistas de TCG. Con una sola membresía participas
+              automáticamente en todos los sorteos de Pokémon y One Piece.
             </p>
           </div>
           {COLUMNS.map((col) => (

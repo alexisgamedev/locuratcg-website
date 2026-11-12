@@ -46,8 +46,6 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
     kicker: raffle?.kicker ?? '',
     prize_image: raffle?.prize_image ?? '',
     retail_value: String(raffle?.retail_value ?? ''),
-    entry_cost_points: String(raffle?.entry_cost_points ?? '50'),
-    entry_goal: String(raffle?.entry_goal ?? '500'),
     draws_at: raffle ? toLocalInput(raffle.draws_at) : defaultDrawDate(),
   })
   const set = (key: keyof typeof form) => (e: { target: { value: string } }) =>
@@ -72,8 +70,6 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
         kicker: form.kicker,
         prize_image: form.prize_image,
         retail_value: Number(form.retail_value || 0),
-        entry_cost_points: Number(form.entry_cost_points),
-        entry_goal: Number(form.entry_goal),
         draws_at: form.draws_at ? new Date(form.draws_at).toISOString() : null,
         status,
       }
@@ -167,27 +163,11 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
         />
       </Row>
 
-      <div className="grid gap-5 sm:grid-cols-3">
-        <Row label="Valor comercial (USD)">
-          <input className={inputClass} type="number" min="0" step="1" value={form.retail_value} onChange={set('retail_value')} />
-        </Row>
-        <Row label="Puntos por boleto">
-          <input
-            className={inputClass}
-            type="number"
-            min="1"
-            step="1"
-            value={form.entry_cost_points}
-            onChange={set('entry_cost_points')}
-            required
-          />
-        </Row>
-        <Row label="Meta de boletos" hint="Solo se usa para la barra de progreso.">
-          <input className={inputClass} type="number" min="1" step="1" value={form.entry_goal} onChange={set('entry_goal')} required />
-        </Row>
-      </div>
+      <Row label="Valor comercial (USD)">
+        <input className={inputClass} type="number" min="0" step="1" value={form.retail_value} onChange={set('retail_value')} />
+      </Row>
 
-      <Row label="Fecha del sorteo" hint="A esta hora se cierran los boletos y se sortea al ganador automáticamente (tu hora local).">
+      <Row label="Fecha del sorteo" hint="A esta hora se sortea automáticamente entre todos los miembros con membresía vigente (tu hora local).">
         <input className={inputClass} type="datetime-local" value={form.draws_at} onChange={set('draws_at')} />
       </Row>
 

@@ -5,6 +5,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import seedRaffles from './seed-raffles.json'
 
+// The points columns and tables (entry_cost_points, entry_goal, points_balance, monthly_points, points_spent,
+// point_transactions, winner_tier) are left over from the old points model and are no longer read.
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
@@ -33,7 +35,7 @@ CREATE TABLE IF NOT EXISTS raffles (
   kicker TEXT,
   prize_image TEXT,
   retail_value REAL NOT NULL DEFAULT 0,
-  entry_cost_points INTEGER NOT NULL,
+  entry_cost_points INTEGER NOT NULL DEFAULT 0,
   status TEXT NOT NULL DEFAULT 'live',
   draws_at TEXT,
   entries_count INTEGER NOT NULL DEFAULT 0,
@@ -52,7 +54,7 @@ CREATE TABLE IF NOT EXISTS memberships (
   tier TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'active',
   points_balance INTEGER NOT NULL DEFAULT 0,
-  monthly_points INTEGER NOT NULL,
+  monthly_points INTEGER NOT NULL DEFAULT 0,
   current_period_end TEXT,
   created_date TEXT NOT NULL,
   updated_date TEXT NOT NULL
@@ -123,7 +125,7 @@ function open() {
         @created_date, @updated_date)`)
     const ts = now()
     db.transaction(() => {
-      for (const r of seedRaffles) insert.run({ ...r, created_date: ts, updated_date: ts })
+      for (const r of seedRaffles) insert.run({ ...r, entry_cost_points: 0, created_date: ts, updated_date: ts })
     })()
   }
   return db

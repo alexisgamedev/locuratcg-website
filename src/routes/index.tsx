@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ArrowRight, Coins, Plus, Sparkles, Target, Ticket, Trophy } from 'lucide-react'
+import { ArrowRight, CalendarClock, Plus, Sparkles, Ticket, Trophy, Users } from 'lucide-react'
 import { GameFilter, type GameFilterId } from '@/components/GameFilter'
+import { PlanCard } from '@/components/PlanCard'
 import { FeaturedRaffle, pickFeaturedRaffle } from '@/components/FeaturedRaffle'
 import { RaffleCard } from '@/components/RaffleCard'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
-import { TierCard } from '@/components/TierCard'
-import { TIERS, tierLabel } from '@/lib/tiers'
 import type { Raffle } from '@/lib/types'
 import { listRaffles } from '@/server/functions'
 
@@ -18,7 +17,7 @@ export const Route = createFileRoute('/')({
       {
         name: 'description',
         content:
-          'Un club de membresía para coleccionistas de TCG. Tu plan suma puntos a tu bóveda cada mes y tú los usas en boletos para los premios de Pokémon y One Piece que estás buscando.',
+          'Un club de membresía para coleccionistas de TCG. Con una sola suscripción participas automáticamente en todos los sorteos de Pokémon y One Piece.',
       },
     ],
   }),
@@ -44,8 +43,8 @@ function Hero({ stats, featured }: { stats: { label: string; value: string }[]; 
             que tanto <span className="text-holo">buscas.</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Tu membresía deposita puntos en tu bóveda cada mes. Úsalos en boletos para los premios de Pokémon y One
-            Piece que de verdad quieres: sin combos, sin relleno, sin boletos desperdiciados.
+            Una sola membresía te mete a todos los sorteos de Pokémon y One Piece. No hay nada que comprar
+            ni que hacer: mientras seas miembro, ya estás participando.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
@@ -83,20 +82,20 @@ const STEPS = [
   {
     n: '01',
     icon: Sparkles,
-    title: 'Elige tu nivel',
-    body: 'Novato, Coleccionista o Maestro. Cada nivel define cuántos puntos llegan a tu bóveda cada mes.',
+    title: 'Hazte miembro',
+    body: 'Un solo plan mensual, sin letra chica. Activas tu membresía y listo.',
   },
   {
     n: '02',
-    icon: Coins,
-    title: 'Los puntos llegan a tu bóveda',
-    body: 'Tus puntos llegan solos en cada renovación. Sin códigos, sin reclamos y sin vencimiento mientras sigas siendo miembro.',
+    icon: Users,
+    title: 'Ya estás participando',
+    body: 'Entras automáticamente a todos los sorteos activos, sin comprar boletos ni hacer nada más.',
   },
   {
     n: '03',
-    icon: Target,
-    title: 'Úsalos donde más importa',
-    body: 'Pon tus puntos en los sorteos que de verdad te interesan. Junta boletos en un solo grial o repártelos entre diez premios.',
+    icon: CalendarClock,
+    title: 'Cada semana, un sorteo',
+    body: 'Cada premio tiene su fecha. A esa hora se elige a un miembro al azar, todos con la misma probabilidad.',
   },
 ]
 
@@ -110,7 +109,7 @@ function HowItWorks() {
             Tres pasos. Lo demás es pura suerte.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Los puntos son la única moneda del club: los ganas cada mes y los apuntas a lo que esté en juego.
+            Tu membresía es tu entrada: mientras esté activa, participas en todo lo que esté en juego.
           </p>
         </div>
         <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -135,39 +134,34 @@ function HowItWorks() {
   )
 }
 
-function Tiers() {
+function Plan() {
   return (
     <section className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
-      <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          <p className="serial">Niveles de membresía</p>
+      <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="max-w-xl">
+          <p className="serial">Membresía</p>
           <h2 className="mt-3 font-display text-3xl leading-tight text-foreground sm:text-4xl">
-            Más plan, más puntos.
+            Un plan. Todos los sorteos.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Cancela cuando quieras. Los puntos que ya están en tu bóveda siguen siendo tuyos hasta el próximo sorteo.
+            Todos los miembros tienen la misma probabilidad en cada sorteo.
+            Cancela cuando quieras.
           </p>
+          <Link to="/rules" className="serial mt-6 inline-block transition-colors hover:text-primary">
+            Lee cómo funcionan los sorteos →
+          </Link>
         </div>
-        <Link to="/membership" className="serial transition-colors hover:text-primary">
-          Compara todos los beneficios →
-        </Link>
-      </div>
-      <div className="mt-12 grid gap-5 lg:grid-cols-3">
-        {TIERS.map((tier) => (
-          <TierCard
-            key={tier.id}
-            tier={tier}
-            priceSuffix="/mes"
-            action={
-              <Link
-                to="/membership"
-                className={`relative mt-8 inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition-transform hover:-translate-y-0.5 ${tier.featured ? 'glow-ion bg-primary text-primary-foreground' : 'border border-border bg-background/60 text-foreground hover:border-primary/40'}`}
-              >
-                Elegir {tier.name}
-              </Link>
-            }
-          />
-        ))}
+        <PlanCard
+          action={
+            <Link
+              to="/membership"
+              className="glow-ion relative mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
+            >
+              Empieza tu membresía
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          }
+        />
       </div>
     </section>
   )
@@ -203,7 +197,7 @@ function HallOfFame({ winners }: { winners: Raffle[] }) {
                   </span>
                   <div>
                     <p className="text-sm font-semibold text-foreground">{w.winner_name || 'Miembro'}</p>
-                    <p className="serial mt-1">{w.winner_tier ? `Miembro ${tierLabel(w.winner_tier)}` : 'Miembro de Locura TCG'}</p>
+                    <p className="serial mt-1">Miembro de Locura TCG</p>
                   </div>
                   <Trophy className="ml-auto h-4 w-4 text-gold" />
                 </div>
@@ -224,20 +218,20 @@ function HallOfFame({ winners }: { winners: Raffle[] }) {
 
 const FAQ = [
   {
-    q: '¿Cómo se convierten los puntos en boletos?',
-    a: 'Cada sorteo indica cuántos puntos cuesta un boleto. Elige un sorteo, escoge cuántos boletos quieres y los puntos se descuentan directo de tu bóveda. Los boletos se acumulan, así que puedes ir con todo por un premio o repartirlos.',
+    q: '¿Qué tengo que hacer para participar en un sorteo?',
+    a: 'Nada más que ser miembro. Mientras tu membresía esté vigente, participas automáticamente en todos los sorteos activos.',
   },
   {
-    q: '¿Qué pasa con los puntos que no uso?',
-    a: 'Se quedan en tu bóveda. Los puntos no desaparecen mientras tu membresía esté activa, así que puedes ahorrar para un grial en vez de gastarlos el mismo día que llegan.',
+    q: '¿Todos tienen la misma probabilidad?',
+    a: 'Sí. Cada miembro cuenta una sola vez en cada sorteo, así que todos tienen exactamente la misma probabilidad de ganar.',
   },
   {
     q: '¿Cómo se eligen los ganadores?',
-    a: 'Cada sorteo tiene una fecha publicada. A esa hora, todos los boletos entran a un sorteo aleatorio público y el ganador se anuncia en la página de ganadores y por correo.',
+    a: 'Cada sorteo tiene una fecha publicada. A esa hora se elige al azar a uno de los miembros con membresía vigente, y el ganador se anuncia en la página de ganadores y por correo.',
   },
   {
     q: '¿Puedo cancelar mi membresía?',
-    a: 'Sí, cuando quieras desde tu bóveda. Mantienes el acceso hasta el final del periodo que ya pagaste, y los boletos que ya compraste se quedan en sus sorteos.',
+    a: 'Sí, cuando quieras desde tu cuenta. Sigues participando en los sorteos hasta el final del periodo que ya pagaste.',
   },
 ]
 
@@ -269,11 +263,11 @@ function HomePage() {
   const drawn = raffles.filter((r) => r.status === 'drawn')
   const shown = live.filter((r) => game === 'all' || r.game === game)
   const value = live.reduce((sum, r) => sum + Number(r.retail_value || 0), 0)
-  const entries = live.reduce((sum, r) => sum + Number(r.entries_count || 0), 0)
+  const members = Number(live[0]?.entries_count || 0)
   const stats = [
     { label: 'Premios activos', value: String(live.length) },
     { label: 'Valor en juego', value: `US$${value.toLocaleString('es-PE')}` },
-    { label: 'Boletos jugados', value: entries.toLocaleString('es-PE') },
+    { label: 'Miembros en juego', value: members.toLocaleString('es-PE') },
   ]
 
   return (
@@ -306,7 +300,7 @@ function HomePage() {
         </section>
 
         <HowItWorks />
-        <Tiers />
+        <Plan />
         <HallOfFame winners={drawn} />
         <Faq />
       </main>

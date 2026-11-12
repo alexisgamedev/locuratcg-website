@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Coins, ShieldCheck, Ticket, Timer } from 'lucide-react'
+import { BadgeCheck, ShieldCheck, Timer, Users } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
 import { SiteLayout } from '@/components/SiteLayout'
+import { PLAN, PLAN_DISCOUNTED } from '@/lib/plan'
 
 export const Route = createFileRoute('/rules')({
   head: () => ({
@@ -9,7 +10,7 @@ export const Route = createFileRoute('/rules')({
       { title: 'Cómo funciona — Locura TCG' },
       {
         name: 'description',
-        content: 'Cómo funcionan los puntos de la membresía, cuánto cuesta un boleto, cuándo se sortean los premios y cómo se elige a los ganadores.',
+        content: 'Cómo funciona la membresía, quiénes participan en cada sorteo, cuándo se sortean los premios y cómo se elige a los ganadores.',
       },
     ],
   }),
@@ -18,19 +19,19 @@ export const Route = createFileRoute('/rules')({
 
 const RULES = [
   {
-    icon: Coins,
-    title: 'Primero, los puntos',
-    body: 'Cada nivel de membresía suma una cantidad fija de puntos a tu bóveda en cada renovación mensual: 150 para Novato, 400 para Coleccionista y 900 para Maestro. Los puntos son la única forma de participar en un sorteo.',
+    icon: BadgeCheck,
+    title: 'Una sola membresía',
+    body: `Hay un único plan mensual${PLAN_DISCOUNTED ? `: S/ ${PLAN.pricePen} al mes como precio de lanzamiento (el precio regular es S/ ${PLAN.regularPricePen})` : ` de S/ ${PLAN.pricePen}`}. Cada pago cubre ${PLAN.periodDays} días de membresía.`,
   },
   {
-    icon: Ticket,
-    title: 'Tú decides tus boletos',
-    body: 'Cada sorteo indica cuántos puntos cuesta un boleto. Tú eliges cuántos boletos llevar, de 1 a 20 por vez. Los puntos salen de tu bóveda en cuanto se confirman los boletos.',
+    icon: Users,
+    title: 'Participas automáticamente',
+    body: 'Mientras tu membresía esté vigente, participas en todos los sorteos activos sin hacer nada más. Cada miembro cuenta una sola vez por sorteo, así que todos tienen la misma probabilidad.',
   },
   {
     icon: Timer,
     title: 'Cada sorteo tiene fecha',
-    body: 'La cuenta regresiva de cada sorteo es el plazo para participar. Al momento del sorteo, todos los boletos entran a un sorteo aleatorio público y se elige uno.',
+    body: 'La cuenta regresiva de cada sorteo marca cuándo se realiza. En ese momento se elige al azar a uno de los miembros con membresía vigente. Si tu membresía vence antes de esa fecha, no entras a ese sorteo.',
   },
   {
     icon: ShieldCheck,
@@ -44,7 +45,7 @@ function RulesPage() {
     <SiteLayout>
       <PageHero eyebrow="Las reglas de la casa" title="Así funciona" highlight="Locura TCG.">
         <p className="mt-5 max-w-xl text-muted-foreground">
-          Nada de combos de boletos confusos. Una sola moneda, un costo claro por boleto y un sorteo publicado para cada premio.
+          Una sola membresía, la misma probabilidad para todos y un sorteo publicado para cada premio.
         </p>
       </PageHero>
 
@@ -64,9 +65,9 @@ function RulesPage() {
         </div>
 
         <div className="mt-12 rounded-2xl border border-primary/30 bg-primary/5 p-7">
-          <h2 className="font-heading text-lg font-semibold text-foreground">¿Listo para usar tus puntos?</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">¿Listo para participar?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Elige un nivel, recibe tus primeros puntos al toque y ponlos en el premio que más quieras.
+            Activa tu membresía y entras al toque a todos los sorteos activos.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link
