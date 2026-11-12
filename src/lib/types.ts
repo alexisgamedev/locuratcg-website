@@ -8,14 +8,12 @@ export interface Raffle {
   kicker: string | null
   prize_image: string | null
   retail_value: number
-  entry_cost_points: number
   status: RaffleStatus
   draws_at: string | null
+  /** Members taking part: everyone with an active membership while live, the snapshot taken at the draw afterwards. */
   entries_count: number
-  entry_goal: number
   winner_name: string | null
   winner_initials: string | null
-  winner_tier: string | null
   draw_note: string | null
   created_date: string
   updated_date: string
@@ -34,46 +32,33 @@ export interface Membership {
   user_id: string
   tier: string
   status: 'active' | 'canceled'
-  points_balance: number
-  monthly_points: number
   current_period_end: string | null
   created_date: string
   updated_date: string
 }
 
+/** A member's place in a raffle that has been drawn. */
 export interface Entry {
   id: string
   user_id: string
   raffle_id: string
   raffle_title: string
   game: Game
-  tickets: number
-  points_spent: number
-  created_date: string
-  updated_date: string
-}
-
-export interface PointTransaction {
-  id: string
-  user_id: string
-  amount: number
-  description: string
   created_date: string
 }
 
 export interface ClubData {
   membership: Membership | null
+  /** True while the paid period is running, so the member is in every live raffle. */
+  isActive: boolean
+  /** Past raffles this member took part in. */
   entries: Entry[]
-  transactions: PointTransaction[]
 }
 
 export interface RaffleEntrant {
   user_id: string
   email: string
   full_name: string
-  tier: string | null
-  tickets: number
-  points_spent: number
 }
 
 export interface RaffleInput {
@@ -83,8 +68,6 @@ export interface RaffleInput {
   kicker: string
   prize_image: string
   retail_value: number
-  entry_cost_points: number
-  entry_goal: number
   draws_at: string | null
   status: 'draft' | 'live'
 }

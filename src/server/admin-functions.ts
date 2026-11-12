@@ -5,7 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { requireAdmin } from './auth.server'
 import { db, newId, now, UPLOADS_DIR } from './db.server'
-import { drawDueRaffles, drawRaffle } from './draw.server'
+import { activeMembers, countActiveMembers, drawDueRaffles, drawRaffle } from './draw.server'
 import { GAME_LABELS } from '@/lib/games'
 import type { Raffle, RaffleEntrant, RaffleInput } from '@/lib/types'
 
@@ -26,15 +26,12 @@ export const adminListRaffles = createServerFn({ method: 'GET' }).handler(async 
        ORDER BY CASE status WHEN 'draft' THEN 0 WHEN 'live' THEN 1 ELSE 2 END, draws_at DESC`,
     )
     .all() as Raffle[]
-  const stats = db
-    .prepare(
-      `SELECT
-         (SELECT COUNT(*) FROM users) AS users,
-         (SELECT COUNT(*) FROM memberships WHERE status = 'active') AS members,
-         (SELECT COALESCE(SUM(tickets), 0) FROM entries) AS entries`,
-    )
-    .get() as { users: number; members: number; entries: number }
-  return { raffles, stats }
+  const members = countActiveMembers()
+  const { users } = db.prepare('SELECT COUNT(*) AS users FROM users').get() as { users: number }
+  return {
+    raffles: raffles.map((r) => (r.status === 'live' ? { ...r, entries_count: members } : r)),
+    stats: { users, members, live: raffles.filter((r) => r.status === 'live').length },
+  }
 })
 
 export const adminGetRaffle = createServerFn({ method: 'GET' })
@@ -42,14 +39,17 @@ export const adminGetRaffle = createServerFn({ method: 'GET' })
   .handler(async ({ data }) => {
     requireAdmin()
     const raffle = (db.prepare('SELECT * FROM raffles WHERE id = ?').get(data.id) as Raffle) ?? null
-    const entrants = db
-      .prepare(
-        `SELECT e.user_id, u.email, u.full_name, m.tier, e.tickets, e.points_spent FROM entries e
-         JOIN users u ON u.id = e.user_id
-         LEFT JOIN memberships m ON m.user_id = e.user_id
-         WHERE e.raffle_id = ? ORDER BY e.tickets DESC`,
-      )
-      .all(data.id) as RaffleEntrant[]
+    // Drawn raffles keep the list of who took part; until then it is whoever is an active member right now.
+    const entrants =
+      raffle?.status === 'drawn'
+        ? (db
+            .prepare(
+              `SELECT e.user_id, u.email, u.full_name FROM entries e
+               JOIN users u ON u.id = e.user_id
+               WHERE e.raffle_id = ? ORDER BY e.created_date, e.rowid`,
+            )
+            .all(data.id) as RaffleEntrant[])
+        : activeMembers()
     return { raffle, entrants }
   })
 
@@ -87,8 +87,6 @@ function validateRaffle(d: RaffleInput): RaffleInput {
     kicker: String(d.kicker ?? '').trim().slice(0, 60),
     prize_image,
     retail_value: num(d.retail_value, 'El valor comercial', 0),
-    entry_cost_points: Math.round(num(d.entry_cost_points, 'Los puntos por boleto', 1)),
-    entry_goal: Math.round(num(d.entry_goal, 'La meta de boletos', 1)),
     draws_at,
     status: d.status,
   }
@@ -105,8 +103,6 @@ export const saveRaffle = createServerFn({ method: 'POST' })
       kicker: data.kicker || null,
       prize_image: data.prize_image || null,
       retail_value: data.retail_value,
-      entry_cost_points: data.entry_cost_points,
-      entry_goal: data.entry_goal,
       draws_at: data.draws_at,
       status: data.status,
       updated_date: ts,
@@ -120,7 +116,7 @@ export const saveRaffle = createServerFn({ method: 'POST' })
       if (existing.status === 'drawn') throw new Error('Este sorteo ya se realizó y no se puede editar.')
       db.prepare(
         `UPDATE raffles SET game = @game, prize_name = @prize_name, kicker = @kicker, prize_image = @prize_image,
-           retail_value = @retail_value, entry_cost_points = @entry_cost_points, entry_goal = @entry_goal,
+           retail_value = @retail_value,
            draws_at = @draws_at, status = @status, updated_date = @updated_date
          WHERE id = @id`,
       ).run({ ...fields, id: data.id })
@@ -129,9 +125,9 @@ export const saveRaffle = createServerFn({ method: 'POST' })
 
     const id = newId()
     db.prepare(
-      `INSERT INTO raffles (id, game, prize_name, kicker, prize_image, retail_value, entry_cost_points, entry_goal,
+      `INSERT INTO raffles (id, game, prize_name, kicker, prize_image, retail_value, entry_cost_points,
          draws_at, status, entries_count, created_date, updated_date)
-       VALUES (@id, @game, @prize_name, @kicker, @prize_image, @retail_value, @entry_cost_points, @entry_goal,
+       VALUES (@id, @game, @prize_name, @kicker, @prize_image, @retail_value, 0,
          @draws_at, @status, 0, @created_date, @updated_date)`,
     ).run({ ...fields, id, created_date: ts })
     return { id }
@@ -141,10 +137,8 @@ export const deleteRaffle = createServerFn({ method: 'POST' })
   .validator((d: { id: string }) => ({ id: String(d.id) }))
   .handler(async ({ data }) => {
     requireAdmin()
-    const { n } = db.prepare('SELECT COUNT(*) AS n FROM entries WHERE raffle_id = ?').get(data.id) as { n: number }
-    if (n > 0) {
-      throw new Error('Ya hay miembros con boletos en este sorteo, así que no se puede eliminar. Mejor sortéalo.')
-    }
+    const raffle = db.prepare('SELECT status FROM raffles WHERE id = ?').get(data.id) as { status: string } | undefined
+    if (raffle?.status === 'drawn') throw new Error('Este sorteo ya se realizó y no se puede eliminar.')
     db.prepare('DELETE FROM raffles WHERE id = ?').run(data.id)
     return { ok: true }
   })

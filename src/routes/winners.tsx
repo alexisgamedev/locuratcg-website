@@ -4,7 +4,6 @@ import { PageHero } from '@/components/PageHero'
 import { PrizeImage } from '@/components/PrizeImage'
 import { SiteLayout } from '@/components/SiteLayout'
 import { GAME_LABELS } from '@/lib/games'
-import { tierLabel } from '@/lib/tiers'
 import { listRaffles } from '@/server/functions'
 
 export const Route = createFileRoute('/winners')({
@@ -25,7 +24,7 @@ function WinnersPage() {
     <SiteLayout>
       <PageHero eyebrow="Salón de la fama" title="El muro de" highlight="ganadores.">
         <p className="mt-5 max-w-xl text-muted-foreground">
-          Todos los sorteos son públicos. Aquí ves quién se llevó qué y en qué nivel estaba.
+          Todos los sorteos son públicos. Aquí ves quién se llevó cada premio.
         </p>
       </PageHero>
 
@@ -55,7 +54,7 @@ function WinnersPage() {
                     </span>
                     <div>
                       <p className="text-sm font-semibold text-foreground">{r.winner_name || 'Miembro'}</p>
-                      <p className="serial mt-0.5">{r.winner_tier ? `Miembro ${tierLabel(r.winner_tier)}` : 'Miembro de Locura TCG'}</p>
+                      <p className="serial mt-0.5">Miembro de Locura TCG</p>
                     </div>
                     <span className="ml-auto font-mono text-[11px] text-muted-foreground">
                       {r.draws_at

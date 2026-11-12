@@ -13,7 +13,7 @@ export const Route = createFileRoute('/raffles/')({
       {
         name: 'description',
         content:
-          'Todos los premios de Pokémon y One Piece abiertos ahora mismo. Usa los puntos de tu bóveda en los que más quieras.',
+          'Todos los premios de Pokémon y One Piece abiertos ahora mismo. Con tu membresía participas automáticamente en todos.',
       },
     ],
   }),
@@ -29,10 +29,10 @@ function RafflesPage() {
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="En juego" title="Sorteos abiertos," highlight="listos para tus puntos.">
+      <PageHero eyebrow="En juego" title="Sorteos abiertos," highlight="todos para los miembros.">
         <p className="mt-5 max-w-xl text-muted-foreground">
-          {live.length === 1 ? 'Hay 1 premio activo' : `Hay ${live.length} premios activos`} ahora mismo. Cada boleto
-          cuesta puntos de tu bóveda: ponlos todos en un grial o repártelos entre varios.
+          {live.length === 1 ? 'Hay 1 premio activo' : `Hay ${live.length} premios activos`} ahora mismo. Si tu
+          membresía está activa, ya participas en todos: no hay nada más que hacer.
         </p>
       </PageHero>
 

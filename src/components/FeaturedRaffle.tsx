@@ -1,10 +1,10 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowRight, Ticket } from 'lucide-react'
+import { ArrowRight, Users } from 'lucide-react'
 import { GAME_LABELS } from '@/lib/games'
 import type { Raffle } from '@/lib/types'
 import { useCountdown } from './Countdown'
 import { PrizeImage } from './PrizeImage'
-import { progressPercent } from './RaffleCard'
+import { participantsLabel } from './RaffleCard'
 
 /** The live raffle with the most valuable prize; ties go to the one that draws first. */
 export function pickFeaturedRaffle(raffles: Raffle[]) {
@@ -41,7 +41,7 @@ function BigCountdown({ target }: { target: string | null }) {
   )
 }
 
-/** Hero widget: the most important live raffle, with its countdown and progress. */
+/** Hero widget: the most important live raffle, with its countdown and how many members are in. */
 export function FeaturedRaffle({ raffle }: { raffle: Raffle | null }) {
   if (!raffle) {
     return (
@@ -50,15 +50,13 @@ export function FeaturedRaffle({ raffle }: { raffle: Raffle | null }) {
           <p className="serial">Sorteo semanal</p>
           <p className="mt-4 font-heading text-xl font-semibold text-foreground">El próximo sorteo está por salir.</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Cada semana sale un nuevo premio. Activa tu membresía para tener tus puntos listos.
+            Cada semana sale un nuevo premio. Con tu membresía activa participas sin hacer nada más.
           </p>
         </div>
       </div>
     )
   }
 
-  const entries = Number(raffle.entries_count || 0)
-  const pct = progressPercent(raffle)
   const value = Number(raffle.retail_value || 0)
   const drawDate = raffle.draws_at
     ? new Date(raffle.draws_at).toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Lima' })
@@ -103,33 +101,20 @@ export function FeaturedRaffle({ raffle }: { raffle: Raffle | null }) {
 
         <div className="px-2 pb-2 pt-4">
           <div className="flex items-baseline justify-between gap-3">
-            <span className="serial">Cierra en</span>
+            <span className="serial">Se sortea en</span>
             {drawDate && <span className="serial normal-case tracking-normal">Sorteo: {drawDate}</span>}
           </div>
           <div className="mt-2.5">
             <BigCountdown target={raffle.draws_at} />
           </div>
 
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-              <span className="font-mono">{entries.toLocaleString('es-PE')} boletos</span>
-              <span className="font-mono">{pct}% completo</span>
-            </div>
-            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-primary to-holo transition-all duration-700"
-                style={{ width: `${pct}%` }}
-              />
-            </div>
-          </div>
-
           <div className="mt-4 flex items-center justify-between gap-3">
             <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-              <Ticket className="h-3.5 w-3.5 text-primary" />
-              <span className="font-mono text-foreground">{raffle.entry_cost_points} pts</span> por boleto
+              <Users className="h-3.5 w-3.5 shrink-0 text-primary" />
+              {participantsLabel(raffle.entries_count)}
             </span>
-            <span className="glow-ion inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform group-hover:-translate-y-0.5">
-              Participar
+            <span className="glow-ion inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform group-hover:-translate-y-0.5">
+              Ver sorteo
               <ArrowRight className="h-4 w-4" />
             </span>
           </div>

@@ -5,7 +5,6 @@ import { ExternalLink, Trash2, Trophy } from 'lucide-react'
 import { toast } from 'sonner'
 import { RaffleForm } from '@/components/admin/RaffleForm'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-import { getTier, tierLabel } from '@/lib/tiers'
 import { adminGetRaffle, deleteRaffle, drawRaffleNow } from '@/server/admin-functions'
 
 export const Route = createFileRoute('/admin/raffles/$raffleId')({
@@ -25,7 +24,7 @@ function EditRafflePage() {
   const draw = useMutation({
     mutationFn: () => drawRaffleNow({ data: { id: raffleId } }),
     onSuccess: (res) => {
-      toast.success(res.winner ? `Ganador: ${res.winner.name} (${res.winner.email})` : 'Cerrado sin boletos.')
+      toast.success(res.winner ? `Ganador: ${res.winner.name} (${res.winner.email})` : 'Cerrado sin participantes.')
       setConfirm(null)
       refetch()
       queryClient.invalidateQueries({ queryKey: ['admin', 'raffles'] })
@@ -65,7 +64,6 @@ function EditRafflePage() {
     )
   }
   const entrants = data.entrants
-  const totalEntries = entrants.reduce((s, e) => s + e.tickets, 0)
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-10 lg:px-8 lg:py-14">
@@ -95,7 +93,6 @@ function EditRafflePage() {
             {raffle.winner_name ? (
               <>
                 Ganado por <span className="font-semibold">{raffle.winner_name}</span>
-                {raffle.winner_tier ? ` (${tierLabel(raffle.winner_tier)})` : ''}
                 {raffle.draw_note ? ` · ${raffle.draw_note}` : ''}
               </>
             ) : (
@@ -111,12 +108,17 @@ function EditRafflePage() {
         <div className="flex items-end justify-between">
           <p className="serial">Participantes</p>
           <span className="serial">
-            {entrants.length} miembros · {totalEntries} boletos
+            {entrants.length} {entrants.length === 1 ? 'miembro' : 'miembros'}
           </span>
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {raffle.status === 'drawn'
+            ? 'Los miembros que entraron al sorteo. Cada uno tuvo la misma probabilidad.'
+            : 'Todos los miembros con membresía vigente participan automáticamente, con la misma probabilidad. La lista se fija al momento del sorteo.'}
+        </p>
         {entrants.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            Aún no hay boletos.
+            Aún no hay miembros con membresía vigente.
           </p>
         ) : (
           <div className="mt-4 overflow-x-auto rounded-xl border border-border">
@@ -124,23 +126,14 @@ function EditRafflePage() {
               <thead className="bg-card/60">
                 <tr className="serial">
                   <th className="px-4 py-3 font-normal">Miembro</th>
-                  <th className="px-4 py-3 font-normal">Nivel</th>
-                  <th className="px-4 py-3 text-right font-normal">Boletos</th>
-                  <th className="px-4 py-3 text-right font-normal">Probabilidad</th>
+                  <th className="px-4 py-3 font-normal">Correo</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {entrants.map((e) => (
                   <tr key={e.user_id}>
-                    <td className="px-4 py-3">
-                      <p className="text-foreground">{e.full_name || '—'}</p>
-                      <p className="text-xs text-muted-foreground">{e.email}</p>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">{e.tier ? getTier(e.tier).name : '—'}</td>
-                    <td className="px-4 py-3 text-right font-mono text-foreground">{e.tickets}</td>
-                    <td className="px-4 py-3 text-right font-mono text-muted-foreground">
-                      {Math.round((e.tickets / totalEntries) * 1000) / 10}%
-                    </td>
+                    <td className="px-4 py-3 text-foreground">{e.full_name || '—'}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{e.email}</td>
                   </tr>
                 ))}
               </tbody>
@@ -188,7 +181,7 @@ function EditRafflePage() {
               </div>
             )}
             <div className="flex-1">
-              <p className="text-sm text-muted-foreground">Solo se puede eliminar antes de que alguien compre boletos.</p>
+              <p className="text-sm text-muted-foreground">Elimina el sorteo si no se va a realizar. Esto no se puede deshacer.</p>
               {confirm === 'delete' ? (
                 <div className="mt-3 flex gap-2">
                   <button
@@ -211,7 +204,6 @@ function EditRafflePage() {
                 <button
                   type="button"
                   onClick={() => setConfirm('delete')}
-                  disabled={entrants.length > 0}
                   className="mt-3 inline-flex items-center gap-2 rounded-full border border-destructive/40 px-4 py-2 text-xs font-semibold text-destructive disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Trash2 className="h-3.5 w-3.5" /> Eliminar sorteo

@@ -53,7 +53,7 @@ export function SiteHeader() {
                 to="/dashboard"
                 className="glow-ion rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
               >
-                Mi bóveda
+                Mi cuenta
               </Link>
             </>
           ) : (
@@ -116,7 +116,7 @@ export function SiteHeader() {
             onClick={close}
             className="mt-3 block rounded-full bg-primary px-5 py-3 text-center text-sm font-semibold text-primary-foreground"
           >
-            {isAuthenticated ? 'Mi bóveda' : 'Únete al club'}
+            {isAuthenticated ? 'Mi cuenta' : 'Únete al club'}
           </Link>
         </div>
       )}

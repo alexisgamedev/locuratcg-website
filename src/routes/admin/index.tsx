@@ -38,7 +38,7 @@ function AdminRafflesPage() {
           {[
             { label: 'Cuentas', value: data.stats.users },
             { label: 'Miembros activos', value: data.stats.members },
-            { label: 'Boletos jugados', value: data.stats.entries },
+            { label: 'Sorteos activos', value: data.stats.live },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-border bg-card p-4">
               <dt className="serial">{s.label}</dt>
@@ -63,7 +63,7 @@ function AdminRafflesPage() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-foreground">{r.prize_name}</p>
                 <p className="serial mt-1">
-                  {GAME_LABELS[r.game] || r.game} · {r.entry_cost_points} pts/boleto · {r.entries_count} boletos
+                  {GAME_LABELS[r.game] || r.game} · {r.entries_count} {r.entries_count === 1 ? 'participante' : 'participantes'}
                 </p>
               </div>
               <div className="hidden text-right sm:block">
