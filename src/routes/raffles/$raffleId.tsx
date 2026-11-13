@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/auth'
 import { GAME_LABELS } from '@/lib/games'
 import { PLAN } from '@/lib/plan'
 import type { Raffle } from '@/lib/types'
+import { formatSoles } from '@/lib/utils'
 import { getMyClub, getRaffle } from '@/server/functions'
 
 export const Route = createFileRoute('/raffles/$raffleId')({
@@ -163,7 +164,7 @@ function RafflePage() {
               <div className="rounded-xl border border-border bg-card/60 p-4">
                 <dt className="serial">Valor comercial</dt>
                 <dd className="mt-2 font-heading text-lg font-semibold text-foreground">
-                  US${Number(raffle.retail_value || 0).toLocaleString('es-PE')}
+                  {formatSoles(raffle.retail_value)}
                 </dd>
               </div>
               <div className="rounded-xl border border-border bg-card/60 p-4">

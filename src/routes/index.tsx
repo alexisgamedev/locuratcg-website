@@ -8,6 +8,7 @@ import { RaffleCard } from '@/components/RaffleCard'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import type { Raffle } from '@/lib/types'
+import { formatSoles } from '@/lib/utils'
 import { listRaffles } from '@/server/functions'
 
 export const Route = createFileRoute('/')({
@@ -266,7 +267,7 @@ function HomePage() {
   const members = Number(live[0]?.entries_count || 0)
   const stats = [
     { label: 'Premios activos', value: String(live.length) },
-    { label: 'Valor en juego', value: `US$${value.toLocaleString('es-PE')}` },
+    { label: 'Valor en juego', value: formatSoles(value) },
     { label: 'Miembros en juego', value: members.toLocaleString('es-PE') },
   ]
 

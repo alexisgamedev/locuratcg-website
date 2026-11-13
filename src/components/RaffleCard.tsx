@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Users } from 'lucide-react'
 import { GAME_LABELS } from '@/lib/games'
 import type { Raffle } from '@/lib/types'
+import { formatSoles } from '@/lib/utils'
 import { Countdown } from './Countdown'
 import { PrizeImage } from './PrizeImage'
 
@@ -12,7 +13,6 @@ export function participantsLabel(count: number) {
 }
 
 export function RaffleCard({ raffle }: { raffle: Raffle }) {
-  const value = Number(raffle.retail_value || 0)
 
   return (
     <Link
@@ -31,7 +31,7 @@ export function RaffleCard({ raffle }: { raffle: Raffle }) {
             {GAME_LABELS[raffle.game] || raffle.game}
           </span>
           <span className="rounded-full bg-gold/15 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-gold ring-1 ring-gold/40">
-            US${value.toLocaleString('es-PE')}
+            {formatSoles(raffle.retail_value)}
           </span>
         </div>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />

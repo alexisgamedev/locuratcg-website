@@ -163,7 +163,7 @@ export function RaffleForm({ raffle, onSaved }: { raffle?: Raffle; onSaved?: () 
         />
       </Row>
 
-      <Row label="Valor comercial (USD)">
+      <Row label="Valor comercial (S/)">
         <input className={inputClass} type="number" min="0" step="1" value={form.retail_value} onChange={set('retail_value')} />
       </Row>
 
