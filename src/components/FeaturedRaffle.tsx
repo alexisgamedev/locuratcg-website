@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { ArrowRight, Users } from 'lucide-react'
 import { GAME_LABELS } from '@/lib/games'
 import type { Raffle } from '@/lib/types'
+import { formatSoles } from '@/lib/utils'
 import { useCountdown } from './Countdown'
 import { PrizeImage } from './PrizeImage'
 import { participantsLabel } from './RaffleCard'
@@ -57,7 +58,6 @@ export function FeaturedRaffle({ raffle }: { raffle: Raffle | null }) {
     )
   }
 
-  const value = Number(raffle.retail_value || 0)
   const drawDate = raffle.draws_at
     ? new Date(raffle.draws_at).toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Lima' })
     : null
@@ -86,7 +86,7 @@ export function FeaturedRaffle({ raffle }: { raffle: Raffle | null }) {
               En vivo
             </span>
             <span className="rounded-full bg-black/60 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-gold ring-1 ring-gold/40 backdrop-blur">
-              US${value.toLocaleString('es-PE')}
+              {formatSoles(raffle.retail_value)}
             </span>
           </div>
           <div className="absolute inset-x-4 bottom-4">
